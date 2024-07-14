@@ -1,0 +1,142 @@
+<!--
+
+Copyright (c) 2016-2020 Living Computers: Museum+Labs
+Copyright (c) 2016-2024 Josh Dersch
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the distribution.
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ContraltoUI.ViewModels"
+        xmlns:conv="using:ContraltoUI.Converters"
+        xmlns:cfg="using:Contralto"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:ContraltoUI.Views"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:DataType="vm:ConfigurationViewModel"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        x:Class="ContraltoUI.Views.ConfigurationDialog"
+        Icon="/Assets/Alto.ico"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Title="System Configuration">
+    <Window.Resources>
+        <conv:EnumToBoolConverter x:Key="EnumConverter"/>
+        <conv:InvertedEnumToBoolConverter x:Key="InvertedEnumConverter"/>
+    </Window.Resources>
+    <StackPanel>
+        <TabControl BorderThickness="1" Margin="5,5,5,5">
+            <TabItem Header="Processor">
+                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                    <StackPanel>
+                        <TextBlock Margin="5">Processor Configuration:</TextBlock>
+
+                        <RadioButton Margin="5" GroupName="g1"
+                            Content="Alto I, 1K Control ROM, 1K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.AltoI}}"/>
+                        <RadioButton Margin="5" GroupName="g1"
+                            Content="Alto II XM, 1K Control ROM, 1K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.OneKRom}}"/>
+                        <RadioButton Margin="5" GroupName="g1"
+                            Content="Alto II XM, 2K Control ROM, 1K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.TwoKRom}}"/>
+                        <RadioButton Margin="5" GroupName="g1"
+                            Content="Alto II XM, 1K Control ROM, 3K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.ThreeKRam}}"/>
+                    </StackPanel>
+                </Border>
+            </TabItem>
+            <TabItem Header="Ethernet">
+                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" >
+                            <Label Content="Alto Host Address (octal):" VerticalAlignment="Center"/>
+                            <TextBox VerticalAlignment="Center" Text="{Binding HostAddress}" Width="40" AcceptsReturn="False" AcceptsTab="False"/>
+                        </StackPanel>
+                        <TextBlock Margin="5">Ethernet Encapsulation Type:</TextBlock>
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton GroupName="g2" Margin="10" Content="UDP" IsChecked="{Binding HostPacketInterfaceType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:PacketInterfaceType.UDPEncapsulation}}"/>
+                            <RadioButton GroupName="g2" Margin="10" Content="Raw Ethernet" IsChecked="{Binding HostPacketInterfaceType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:PacketInterfaceType.EthernetEncapsulation}}"/>
+                            <RadioButton GroupName="g2" Margin="10" Content="None" IsChecked="{Binding HostPacketInterfaceType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:PacketInterfaceType.None}}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" IsVisible="{Binding HostPacketInterfaceType, Converter={StaticResource InvertedEnumConverter}, ConverterParameter={x:Static cfg:PacketInterfaceType.None}}">
+                            <TextBlock Margin="5">Select the network interface to use with ContrAlto</TextBlock>
+                            <ListBox Margin="5" Height="100" SelectionMode="Single,AlwaysSelected" ItemsSource="{Binding NetworkDevices}" SelectedValue="{Binding HostPacketInterfaceName}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </TabItem>
+            <TabItem Header="Display">
+                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                    <StackPanel>
+                        <CheckBox Margin="5" IsChecked="{Binding ThrottleSpeed}">Throttle Framerate at 60 fields/sec</CheckBox>
+                        <CheckBox Margin="5" IsChecked="{Binding SlowPhosphorSimulation}">Simulate Slow Phosphor Persistence</CheckBox>
+                        <StackPanel Margin="5" Orientation="Horizontal">
+                            <Label VerticalAlignment="Center">Screen Scaling:</Label>
+                            <NumericUpDown Value="{Binding DisplayScale}" Minimum="1" Maximum="4" Increment="1" FormatString="0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </TabItem>
+            <TabItem Header="DAC">
+                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                    <StackPanel>
+                        <CheckBox Margin="5" IsChecked="{Binding EnableAudioDAC}">Enable Audio DAC (Used by Smalltalk Music System)</CheckBox>
+                        <CheckBox Margin="5" IsEnabled="{Binding EnableAudioDAC}" IsChecked="{Binding EnableAudioDACCapture}">Enable DAC output capture</CheckBox>
+                        <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                            <StackPanel Orientation="Horizontal" Margin="5" IsEnabled="{Binding EnableAudioDACCapture}">
+                                <TextBlock Margin="0,10,0,0">Output File:</TextBlock>
+                                <TextBox Margin="5" Width="180" Text="{Binding AudioDACCapturePath}"/>
+                                <Button Margin="5" Command="{Binding BrowseForDACOutput}">Browse...</Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </TabItem>
+            <TabItem Header="Printing">
+                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                    <StackPanel>
+                        <CheckBox Margin="5" IsChecked="{Binding EnablePrinting}">Enable Printing (via Orbit / Dover ROS)</CheckBox>
+                        <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal" Margin="5" IsEnabled="{Binding EnablePrinting}">
+                                    <TextBlock Margin="0,10,0,0">PDF output path:</TextBlock>
+                                    <TextBox Margin="5" Width="180" Text="{Binding PDFOutputPath}"/>
+                                    <Button Margin="5" Command="{Binding BrowseForPDFOutput}">Browse...</Button>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="5" IsEnabled="{Binding EnablePrinting}">
+                                    <TextBlock Margin="0,10,0,0">Raster X Offset:</TextBlock>
+                                    <TextBox Margin="5" Width="50" Text="{Binding PageRasterOffsetX}"/>
+                                    <TextBlock Margin="0,10,0,0">Raster Y Offset:</TextBlock>
+                                    <TextBox Margin="5" Width="50" Text="{Binding PageRasterOffsetY}"/>
+                                </StackPanel>
+                                <CheckBox Margin="5" IsEnabled="{Binding EnablePrinting}" IsChecked="{Binding ReversePageOrder}">Reverse Output Page Order</CheckBox>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </TabItem>
+        </TabControl>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,5" IsVisible="{Binding RestartRequired}">
+            <Label>These changes will require a restart to take effect.</Label>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,5">
+            <Button HorizontalAlignment="Right" Content="OK" Click="OnOkClick" Margin="5,0,5,0"/>
+            <Button HorizontalAlignment="Right" Content="Cancel" Click="OnCancelClick" Margin="5,0,5,0"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

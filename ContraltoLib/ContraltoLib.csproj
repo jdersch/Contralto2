@@ -1,0 +1,254 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ROM\ACSOURCE.NEW" />
+    <None Remove="ROM\ACSOURCE.OLD" />
+    <None Remove="ROM\AltoII\C0" />
+    <None Remove="ROM\AltoII\C1" />
+    <None Remove="ROM\AltoII\C2" />
+    <None Remove="ROM\AltoII\C3" />
+    <None Remove="ROM\AltoII\U52" />
+    <None Remove="ROM\AltoII\U53" />
+    <None Remove="ROM\AltoII\U54" />
+    <None Remove="ROM\AltoII\U55" />
+    <None Remove="ROM\AltoII\U60" />
+    <None Remove="ROM\AltoII\U61" />
+    <None Remove="ROM\AltoII\U62" />
+    <None Remove="ROM\AltoII\U63" />
+    <None Remove="ROM\AltoII\U64" />
+    <None Remove="ROM\AltoII\U65" />
+    <None Remove="ROM\AltoII\U70" />
+    <None Remove="ROM\AltoII\U71" />
+    <None Remove="ROM\AltoII\U72" />
+    <None Remove="ROM\AltoII\U73" />
+    <None Remove="ROM\AltoII\U74" />
+    <None Remove="ROM\AltoII\U75" />
+    <None Remove="ROM\AltoI\00_23.BIN" />
+    <None Remove="ROM\AltoI\01_23.BIN" />
+    <None Remove="ROM\AltoI\02_23.BIN" />
+    <None Remove="ROM\AltoI\03_23.BIN" />
+    <None Remove="ROM\AltoI\04_23.BIN" />
+    <None Remove="ROM\AltoI\05_23.BIN" />
+    <None Remove="ROM\AltoI\06_23.BIN" />
+    <None Remove="ROM\AltoI\07_23.BIN" />
+    <None Remove="ROM\AltoI\10_23.BIN" />
+    <None Remove="ROM\AltoI\11_23.BIN" />
+    <None Remove="ROM\AltoI\12_23.BIN" />
+    <None Remove="ROM\AltoI\13_23.BIN" />
+    <None Remove="ROM\AltoI\14_23.BIN" />
+    <None Remove="ROM\AltoI\15_23.BIN" />
+    <None Remove="ROM\AltoI\16_23.BIN" />
+    <None Remove="ROM\AltoI\17_23.BIN" />
+    <None Remove="ROM\AltoI\20_23.BIN" />
+    <None Remove="ROM\AltoI\21_23.BIN" />
+    <None Remove="ROM\AltoI\22_23.BIN" />
+    <None Remove="ROM\AltoI\23_23.BIN" />
+    <None Remove="ROM\AltoI\24_23.BIN" />
+    <None Remove="ROM\AltoI\25_23.BIN" />
+    <None Remove="ROM\AltoI\26_23.BIN" />
+    <None Remove="ROM\AltoI\27_23.BIN" />
+    <None Remove="ROM\AltoI\30_23.BIN" />
+    <None Remove="ROM\AltoI\31_23.BIN" />
+    <None Remove="ROM\AltoI\32_23.BIN" />
+    <None Remove="ROM\AltoI\33_23.BIN" />
+    <None Remove="ROM\AltoI\34_23.BIN" />
+    <None Remove="ROM\AltoI\35_23.BIN" />
+    <None Remove="ROM\AltoI\36_23.BIN" />
+    <None Remove="ROM\AltoI\37_23.BIN" />
+    <None Remove="ROM\AltoI\C0_23.BIN" />
+    <None Remove="ROM\AltoI\C1_23.BIN" />
+    <None Remove="ROM\AltoI\C2_23.BIN" />
+    <None Remove="ROM\AltoI\C3_23.BIN" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ROM\ACSOURCE.NEW">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\ACSOURCE.OLD">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\C0">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\C1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\C2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\C3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U52">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U53">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U54">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U55">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U60">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U61">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U62">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U63">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U64">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U65">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U70">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U71">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U72">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U73">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U74">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoII\U75">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\00_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\01_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\02_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\03_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\04_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\05_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\06_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\07_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\10_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\11_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\12_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\13_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\14_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\15_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\16_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\17_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\20_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\21_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\22_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\23_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\24_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\25_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\26_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\27_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\30_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\31_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\32_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\33_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\34_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\35_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\36_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\37_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\C0_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\C1_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\C2_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROM\AltoI\C3_23.BIN">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.1.0-rc2" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.3" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="SharpPcap" Version="6.3.0" />
+  </ItemGroup>
+
+</Project>

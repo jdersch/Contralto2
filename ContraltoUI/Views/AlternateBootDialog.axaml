@@ -1,0 +1,82 @@
+<!--
+
+Copyright (c) 2016-2020 Living Computers: Museum+Labs
+Copyright (c) 2016-2024 Josh Dersch
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the distribution.
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ContraltoUI.ViewModels"
+        xmlns:conv="using:ContraltoUI.Converters"
+        xmlns:cfg="using:Contralto"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:ContraltoUI.Views"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:DataType="vm:ConfigurationViewModel"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        x:Class="ContraltoUI.Views.AlternateBootDialog"
+        Icon="/Assets/Alto.ico"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Title="Alternate Boot Configuration">
+    <Window.Resources>
+        <conv:EnumToBoolConverter x:Key="EnumConverter"/>
+        <conv:InvertedEnumToBoolConverter x:Key="InvertedEnumConverter"/>
+    </Window.Resources>
+    <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+        <StackPanel>
+            <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="5">Alternate Boot Type:</TextBlock>
+                    <StackPanel Orientation="Horizontal" Margin="20,0,0,5">
+                        <RadioButton Margin="0" GroupName="g1"
+                            Content="Disk Boot" IsChecked="{Binding AlternateBootType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:AlternateBootType.Disk}}"/>
+                        <RadioButton Margin="10,0,0,0" GroupName="g1"
+                            Content="Ether Boot" IsChecked="{Binding AlternateBootType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:AlternateBootType.Ethernet}}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="5">Disk Boot Address:</TextBlock>
+                    <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+                        <Label Content="Disk address to boot (octal):" VerticalAlignment="Center"/>
+                        <TextBox Width="75" VerticalAlignment="Center" Text="{Binding DiskBootAddress}" AcceptsReturn="False" AcceptsTab="False"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Margin="5">Ethernet Boot File:</TextBlock>
+                    <StackPanel Orientation="Vertical" Margin="20,0,0,0">
+                        <Label Content="Select a standard boot file number below, or enter a custom value (octal):" VerticalAlignment="Center"/>
+                        <ComboBox Margin="5" ItemsSource="{Binding BootEntries}" IsTextSearchEnabled="true" SelectedValue="{Binding EtherBootFile}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,5">
+                <Button HorizontalAlignment="Right" Content="OK" Click="OnOkClick" Margin="5,0,5,0"/>
+                <Button HorizontalAlignment="Right" Content="Cancel" Click="OnCancelClick" Margin="5,0,5,0"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

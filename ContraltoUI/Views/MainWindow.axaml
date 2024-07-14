@@ -1,0 +1,263 @@
+<!--
+
+Copyright (c) 2016-2020 Living Computers: Museum+Labs
+Copyright (c) 2016-2024 Josh Dersch
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the distribution.
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ContraltoUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:ContraltoUI.Views"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ContraltoUI.Views.MainWindow"
+        x:DataType="vm:AltoUIViewModel"
+        Icon="/Assets/Alto.ico"
+        Title="Contralto"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        >
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File" Name="FileMenu">
+                <!-- good LORD this is verbose -->
+                <MenuItem Header="Diablo Drive 0">
+                    <MenuItem Header="Load" Command="{Binding LoadDiabloDrive}" HotKey="Ctrl+Alt+L">
+                        <MenuItem.CommandParameter>
+                            <sys:Int32>0</sys:Int32>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Unload" Command="{Binding UnloadDiabloDrive}">
+                        <MenuItem.CommandParameter>
+                            <sys:Int32>0</sys:Int32>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="New" Command="{Binding NewDiabloDrive}">
+                        <MenuItem.CommandParameter>
+                            <sys:Int32>0</sys:Int32>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="{Binding DiabloDriveNames[0]}" IsEnabled="False"/>
+                </MenuItem>
+                <MenuItem Header="Diablo Drive 1">
+                    <MenuItem Header="Load" Command="{Binding LoadDiabloDrive}">
+                        <MenuItem.CommandParameter>
+                            <sys:Int32>1</sys:Int32>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Unload" Command="{Binding UnloadDiabloDrive}">
+                        <MenuItem.CommandParameter>
+                            <sys:Int32>1</sys:Int32>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="New" Command="{Binding NewDiabloDrive}">
+                        <MenuItem.CommandParameter>
+                            <sys:Int32>1</sys:Int32>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="{Binding DiabloDriveNames[1]}" IsEnabled="False"/>
+                </MenuItem>
+                <MenuItem Header="Trident Drives" Name="TridentMenu">
+                    <!-- This is completely ridiculous, is there a better way to do this that doesn't involve
+                         writing a ton of equally ridiculous code? -->
+                    <MenuItem Header="Drive 0">
+                        <MenuItem Header="Load" Command="{Binding LoadTridentDrive}" HotKey="Ctrl+Alt+T">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>0</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Unload" Command="{Binding UnloadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>0</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="New" Command="{Binding NewTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>0</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="{Binding TridentDriveNames[0]}" IsEnabled="False"/>
+                    </MenuItem>
+                    <MenuItem Header="Drive 1">
+                        <MenuItem Header="Load" Command="{Binding LoadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>1</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Unload" Command="{Binding UnloadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>1</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="New" Command="{Binding NewTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>1</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="{Binding TridentDriveNames[1]}" IsEnabled="False"/>
+                     </MenuItem>
+                    <MenuItem Header="Drive 2">
+                        <MenuItem Header="Load" Command="{Binding LoadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>2</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Unload" Command="{Binding UnloadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>2</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="New" Command="{Binding NewTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>2</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="{Binding TridentDriveNames[2]}" IsEnabled="False"/>
+                    </MenuItem>
+                    <MenuItem Header="Drive 3">
+                        <MenuItem Header="Load" Command="{Binding LoadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>3</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Unload" Command="{Binding UnloadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>3</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="New" Command="{Binding NewTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>3</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="{Binding TridentDriveNames[3]}" IsEnabled="False"/>
+                    </MenuItem>
+                    <MenuItem Header="Drive 4">
+                        <MenuItem Header="Load" Command="{Binding LoadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>4</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Unload" Command="{Binding UnloadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>4</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="New" Command="{Binding NewTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>4</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="{Binding TridentDriveNames[4]}" IsEnabled="False"/>
+                    </MenuItem>
+                    <MenuItem Header="Drive 5">
+                        <MenuItem Header="Load" Command="{Binding LoadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>5</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Unload" Command="{Binding UnloadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>5</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="New" Command="{Binding NewTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>5</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="{Binding TridentDriveNames[5]}" IsEnabled="False"/>
+                    </MenuItem>
+                    <MenuItem Header="Drive 6">
+                        <MenuItem Header="Load" Command="{Binding LoadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>6</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Unload" Command="{Binding UnloadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>6</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="New" Command="{Binding NewTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>6</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="{Binding TridentDriveNames[6]}" IsEnabled="False"/>
+                    </MenuItem>
+                    <MenuItem Header="Drive 7">
+                        <MenuItem Header="Load" Command="{Binding LoadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>7</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="Unload" Command="{Binding UnloadTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>7</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="New" Command="{Binding NewTridentDrive}">
+                            <MenuItem.CommandParameter>
+                                <sys:Int32>7</sys:Int32>
+                            </MenuItem.CommandParameter>
+                        </MenuItem>
+                        <MenuItem Header="{Binding TridentDriveNames[7]}" IsEnabled="False"/>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Save Screenshot" Command="{Binding SaveScreenshot}" HotKey="Ctrl+Alt+P"/>
+                <MenuItem Header="Script">
+                    <MenuItem Header="Record Script..." IsVisible="{Binding CanRecordScript}" Command="{Binding RecordScript}" HotKey="Ctrl+Alt+E"/>
+                    <MenuItem Header="Play Script..." IsVisible="{Binding CanPlayScript}" Command="{Binding PlayScript}" HotKey="Ctrl+Alt+L"/>
+                    <MenuItem Header="Stop Recording" IsVisible="{Binding !CanRecordScript}" IsEnabled="{Binding IsScriptRecording}" Command="{Binding RecordScript}" HotKey="Ctrl+Alt+E"/>
+                    <MenuItem Header="Stop Playback" IsVisible="{Binding !CanPlayScript}" IsEnabled="{Binding IsScriptPlaying}" Command="{Binding PlayScript}" HotKey="Ctrl+Alt+L"/>
+                </MenuItem>
+                <MenuItem Header="_Exit" Command="{Binding Exit}" HotKey="Ctrl+Alt+X"/>
+            </MenuItem>
+            <MenuItem Header="_System">
+                <MenuItem Header="_Start" Command="{Binding StartSystem}" IsEnabled="{Binding !IsSystemRunning}" HotKey="Ctrl+Alt+S"/>
+                <MenuItem Header="_Reset" Command="{Binding ResetSystem}" IsEnabled="{Binding IsSystemRunning}" HotKey="Ctrl+Alt+R"/>
+                <MenuItem Header="_Pause" Command="{Binding PauseSystem}" IsEnabled="{Binding IsSystemRunning}" HotKey="Ctrl+Alt+P"/>
+                <MenuItem Header="Start with Alternate Boot" Command="{Binding StartSystemWithAltBoot}" IsEnabled="{Binding !IsSystemRunning}" IsVisible="{Binding !IsSystemRunning}" HotKey="Ctrl+Alt+A"/>
+                <MenuItem Header="Restart with Alternate Boot" Command="{Binding StartSystemWithAltBoot}" IsEnabled="{Binding IsSystemRunning}" IsVisible="{Binding IsSystemRunning}" HotKey="Ctrl+Alt+A"/>
+                <MenuItem Header="Alternate Boot Options..." Command="{Binding ShowAlternateBootDialog}"/>
+                <MenuItem Header="System Configuration..." Command="{Binding ShowSystemConfigurationDialog}" HotKey="Ctrl+Alt+C"/>
+                <MenuItem Header="Show Debugger..." Command="{Binding ShowDebugger}" HotKey="Ctrl+Alt+D"/>
+                <MenuItem Header="Full Screen..." Command="{Binding ToggleFullScreen}" HotKey="Ctrl+Alt+F"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="About" Command="{Binding ShowAboutDialog}" HotKey="Ctrl+Alt+H"/>
+            </MenuItem>
+        </Menu>
+        
+        <views:AltoDisplay DockPanel.Dock="Top"/>
+        
+        <Border BorderBrush="Gray" BorderThickness="1">
+            <StackPanel Background="{DynamicResource MenuFlyoutItemBackground}" DockPanel.Dock="Bottom" Orientation="Horizontal">
+                <TextBlock Text="{Binding FieldsPerSecond, StringFormat='{}{0} Fields/Sec'}" Margin="5,0,5,0" HorizontalAlignment="Left" Foreground="{DynamicResource MenuFlyoutItemForeground}"/>
+                <TextBlock Text="|" HorizontalAlignment="Left" Margin="5,0,5,0" Foreground="{DynamicResource MenuFlyoutItemForeground}"/>
+                <TextBlock Text="{Binding ExecutionStatus}" Margin="5,0,5,0" HorizontalAlignment="Left" Foreground="{DynamicResource MenuFlyoutItemForeground}/>"/>
+            </StackPanel>
+        </Border>
+    </DockPanel>
+
+
+</Window>
