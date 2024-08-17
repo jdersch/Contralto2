@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:ContraltoUI.Views"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:conv="using:ContraltoUI.Converters"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ContraltoUI.Views.MainWindow"
         x:DataType="vm:AltoUIViewModel"
@@ -34,9 +35,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Title="Contralto"
         SizeToContent="WidthAndHeight"
         CanResize="False"
+        WindowState="{Binding WindowState}"
         >
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
+    <DockPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Menu DockPanel.Dock="Top" IsVisible="{Binding !FullScreenDisplay}">
             <MenuItem Header="_File" Name="FileMenu">
                 <!-- good LORD this is verbose -->
                 <MenuItem Header="Diablo Drive 0">
@@ -230,7 +232,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     <MenuItem Header="Stop Recording" IsVisible="{Binding !CanRecordScript}" IsEnabled="{Binding IsScriptRecording}" Command="{Binding RecordScript}" HotKey="Ctrl+Alt+E"/>
                     <MenuItem Header="Stop Playback" IsVisible="{Binding !CanPlayScript}" IsEnabled="{Binding IsScriptPlaying}" Command="{Binding PlayScript}" HotKey="Ctrl+Alt+L"/>
                 </MenuItem>
-                <MenuItem Header="_Exit" Command="{Binding Exit}" HotKey="Ctrl+Alt+X"/>
+                <MenuItem Header="E_xit" Command="{Binding Exit}" HotKey="Ctrl+Alt+X"/>
             </MenuItem>
             <MenuItem Header="_System">
                 <MenuItem Header="_Start" Command="{Binding StartSystem}" IsEnabled="{Binding !IsSystemRunning}" HotKey="Ctrl+Alt+S"/>
@@ -241,7 +243,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <MenuItem Header="Alternate Boot Options..." Command="{Binding ShowAlternateBootDialog}"/>
                 <MenuItem Header="System Configuration..." Command="{Binding ShowSystemConfigurationDialog}" HotKey="Ctrl+Alt+C"/>
                 <MenuItem Header="Show Debugger..." Command="{Binding ShowDebugger}" HotKey="Ctrl+Alt+D"/>
-                <MenuItem Header="Full Screen..." Command="{Binding ToggleFullScreen}" HotKey="Ctrl+Alt+F"/>
+                <MenuItem Header="Full Screen Display" Command="{Binding ToggleFullScreen}" HotKey="Ctrl+Alt+F"/>
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="About" Command="{Binding ShowAboutDialog}" HotKey="Ctrl+Alt+H"/>
@@ -250,7 +252,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         
         <views:AltoDisplay DockPanel.Dock="Top"/>
         
-        <Border BorderBrush="Gray" BorderThickness="1">
+        <Border BorderBrush="Gray" BorderThickness="1" IsVisible="{Binding !FullScreenDisplay}">
             <StackPanel Background="{DynamicResource MenuFlyoutItemBackground}" DockPanel.Dock="Bottom" Orientation="Horizontal">
                 <TextBlock Text="{Binding FieldsPerSecond, StringFormat='{}{0} Fields/Sec'}" Margin="5,0,5,0" HorizontalAlignment="Left" Foreground="{DynamicResource MenuFlyoutItemForeground}"/>
                 <TextBlock Text="|" HorizontalAlignment="Left" Margin="5,0,5,0" Foreground="{DynamicResource MenuFlyoutItemForeground}"/>

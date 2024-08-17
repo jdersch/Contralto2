@@ -20,31 +20,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+using Avalonia.Data.Converters;
+using Avalonia.Data;
 using System;
+using System.Globalization;
+using Avalonia.Controls;
 
-using Avalonia;
-using Avalonia.ReactiveUI;
-using ContraltoUI;
-
-namespace Contralto;
-
-class Program
+namespace ContraltoUI.Converters
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
-    [STAThread]
-    public static void Main(string[] args)
+    public class BoolToWindowStateConverter : IValueConverter
     {
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            WindowState? val = (bool)value ? WindowState.FullScreen : WindowState.Normal;
+            return val;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
     }
-
-    // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .UseReactiveUI()
-            .WithInterFont()
-            .LogToTrace();
-
 }

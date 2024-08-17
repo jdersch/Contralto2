@@ -26,6 +26,7 @@ using Contralto.Memory;
 using Contralto.Display;
 using Contralto.Scripting;
 using System.Runtime.CompilerServices;
+using Contralto.Logging;
 
 namespace Contralto
 {
@@ -48,7 +49,7 @@ namespace Contralto
             _mouseAndKeyset = new MouseAndKeyset(this);
             _ethernetController = new EthernetController(this);
             _orbitController = new OrbitController(this);
-            _audioDAC = new AudioDAC(this);
+            _audioDAC = new AudioDAC();
             _organKeyboard = new OrganKeyboard(this);
             _tridentController = new TridentController(this);
 
@@ -71,7 +72,7 @@ namespace Contralto
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Could not load image '{0}' for Diablo drive 0.  Error '{1}'.", Configuration.Drive0Image, e.Message);
+                    Log.Write(LogType.Warning, LogComponent.DiskController, "Could not load image '{0}' for Diablo drive 0.  Error '{1}'.", Configuration.Drive0Image, e.Message);
                     UnloadDiabloDrive(0);
                 }
             }
@@ -84,7 +85,7 @@ namespace Contralto
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Could not load image '{0}' for Diablo drive 1.  Error '{1}'.", Configuration.Drive1Image, e.Message);
+                    Log.Write(LogType.Warning, LogComponent.DiskController, "Could not load image '{0}' for Diablo drive 1.  Error '{1}'.", Configuration.Drive0Image, e.Message);
                     UnloadDiabloDrive(1);
                 }
             }
@@ -103,7 +104,7 @@ namespace Contralto
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Could not load image '{0}' for Trident drive {1}.  Error '{2}'.", Configuration.TridentImages[i], i, e.Message);
+                        Log.Write(LogType.Warning, LogComponent.DiskController, "Could not load image '{0}' for Trident drive {1}.  Error '{2}'.", Configuration.TridentImages[i], i, e.Message);
                         UnloadTridentDrive(i);
                     }
                 }
@@ -168,7 +169,7 @@ namespace Contralto
             }
 
             //
-            // Allow the DAC to flush its output
+            // Ensure audio cleans up before exit.
             //
             _audioDAC.Shutdown();
 
@@ -186,7 +187,7 @@ namespace Contralto
                     }
                     catch(Exception e)
                     {
-                        Console.WriteLine("Failed to save the contents of Diablo disk {0}.  Error {1}", i, e.Message);
+                        Log.Write(LogType.Warning, LogComponent.DiskController, "Failed to save the contents of Diablo disk {0}.  Error {1}", i, e.Message);
                     }
                 }
                 
@@ -198,7 +199,7 @@ namespace Contralto
                     }
                     catch(Exception e)
                     {
-                        Console.WriteLine("Failed to save the contents of Trident disk {0}.  Error {1}", i, e.Message);
+                        Log.Write(LogType.Warning, LogComponent.DiskController, "Failed to save the contents of Trident disk {0}.  Error {1}", i, e.Message);
                     }
                 }
             }
@@ -446,6 +447,11 @@ namespace Contralto
         public TridentController TridentController
         {
             get { return _tridentController; }
+        }
+
+        public AudioDAC AudioDAC 
+        { 
+            get { return _audioDAC; } 
         }
 
         public Scheduler Scheduler

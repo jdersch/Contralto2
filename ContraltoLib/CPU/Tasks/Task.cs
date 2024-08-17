@@ -129,15 +129,8 @@ namespace Contralto.CPU
             /// <returns>An InstructionCompletion indicating whether this instruction calls for a task switch or not.</returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public InstructionCompletion ExecuteNext()
-            {                
+            {
                 MicroInstruction instruction = _cpu.UCodeMemory.GetInstruction(_mpc, _taskType);
-
-                /* 
-                if (_taskType == TaskType.Emulator && UCodeMemory.GetBank(_taskType) == MicrocodeBank.RAM0)
-                {
-                    Console.WriteLine("{0}: {1}", Conversion.ToOctal(_mpc), UCodeDisassembler.DisassembleInstruction(instruction, _taskType));
-                }*/
-
                 return ExecuteInstruction(instruction);
             }
 

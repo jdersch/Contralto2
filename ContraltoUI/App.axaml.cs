@@ -27,13 +27,12 @@ using Avalonia.Markup.Xaml;
 using Contralto;
 using ContraltoUI.ViewModels;
 using ContraltoUI.Views;
+using System;
 
 namespace ContraltoUI;
 
 public partial class App : Application
 {
-    public AltoSystem AltoSystem => _system;
-
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -41,35 +40,96 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        IClassicDesktopStyleApplicationLifetime desktop = ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+
+        if (desktop == null)
+        {
+            return;
+        }
+
+        ParseArgs(desktop.Args);
+
         // TODO: move this inside AltoUIViewModel entirely?
         Configuration config = new Configuration(true);
         _system = new AltoSystem(config);
 
+        if (config.EnableAudioDAC)
+        {
+            SDLAudioSink audioSink = new SDLAudioSink();
+            _system.AudioDAC.AttachSink(audioSink);
+        }
 
         AltoUIViewModel vm = new AltoUIViewModel(_system);
+
         // Line below is needed to remove Avalonia data validation.
         // Without this line you will get duplicate validations from both Avalonia and CT
         BindingPlugins.DataValidators.RemoveAt(0);
 
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        desktop.MainWindow = new MainWindow()
         {
-            desktop.MainWindow = new MainWindow()
-            {
-                DataContext = vm
-            };
+            DataContext = vm
+        };
 
-            // TODO: hook up dpi change events so we can handle changes that happen while we're running.
-            //vm.DisplayScale = desktop.MainWindow.RenderScaling;
-        }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
-            singleViewPlatform.MainView = new AltoDisplay
-            {
-                DataContext = vm
-            };
-        }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private void ParseArgs(string[] args)
+    {
+        if (args.Length == 0)
+        {
+            return;
+        }
+        for (int i = 0; i < args.Length; i++)
+        {
+            switch (args[i++].ToLowerInvariant())
+            {
+                case "-config":
+                    if (i < args.Length)
+                    {
+                        StartupOptions.ConfigurationFile = args[i];
+                    }
+                    else
+                    {
+                        PrintUsage();
+                        return;
+                    }
+                    break;
+
+                case "-script":
+                    if (i < args.Length)
+                    {
+                        StartupOptions.ScriptFile = args[i];
+                    }
+                    else
+                    {
+                        PrintUsage();
+                        return;
+                    }
+                    break;
+
+                case "-rompath":
+                    if (i < args.Length)
+                    {
+                        StartupOptions.RomPath = args[i];
+                    }
+                    else
+                    {
+                        PrintUsage();
+                        return;
+                    }
+                    break;
+
+                default:
+                    PrintUsage();
+                    return;
+            }
+        }
+    }
+
+    private static void PrintUsage()
+    {
+        Console.WriteLine("Usage: ContrAlto [-config <configurationFile>] [-script <scriptFile>]");
     }
 
     private AltoSystem _system;

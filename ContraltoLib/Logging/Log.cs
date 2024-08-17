@@ -34,8 +34,8 @@ namespace Contralto.Logging
         EmulatorTask = 0x1,
         DiskSectorTask = 0x2,
         DiskWordTask = 0x4,
-        DiskController = 0x8, 
-        Alu = 0x10,       
+        DiskController = 0x8,
+        Alu = 0x10,
         Memory = 0x20,
         Keyboard = 0x40,
         Display = 0x80,
@@ -83,13 +83,22 @@ namespace Contralto.Logging
         {
             _components = Configuration.LogComponents;
             _type = Configuration.LogTypes;
-            _logIndex = 0;
+            _logText = new List<string>();
         }
+
+        public static event EventHandler Updated;
 
         public static LogComponent LogComponents
         {
             get { return _components; }
             set { _components = value; }
+        }
+
+        public static IEnumerable<string> LogText => _logText;
+
+        public static void Clear()
+        {
+            _logText.Clear();
         }
 
 #if LOGGING_ENABLED
@@ -102,7 +111,7 @@ namespace Contralto.Logging
         /// <param name="args"></param>
         public static void Write(LogComponent component, string message, params object[] args)
         {
-            Write(LogType.Normal, component, message, args);            
+            Write(LogType.Normal, component, message, args);
         }
 
         public static void Write(LogType type, LogComponent component, string message, params object[] args)
@@ -113,8 +122,11 @@ namespace Contralto.Logging
                 //
                 // My log has something to tell you...
                 // TODO: color based on type, etc.
-                Console.WriteLine(_logIndex.ToString() + ": " + component.ToString() + ": " + message, args);
-                _logIndex++;
+                string format = $"{_logText.Count}: {component.ToString()} : {message}";
+                string output = String.Format(format, args);
+                _logText.Add(output);
+
+                Updated(output, new EventArgs());
             }
         }
 #else
@@ -133,5 +145,6 @@ namespace Contralto.Logging
         private static LogComponent _components;
         private static LogType _type;
         private static long _logIndex;
+        private static List<string> _logText;
     }
 }

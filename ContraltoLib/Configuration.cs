@@ -181,7 +181,7 @@ namespace Contralto
                 }
                 catch
                 {
-                    Console.WriteLine("Warning: unable to load configuration.  Assuming default settings.");
+                    Log.Write(LogType.Warning, LogComponent.Configuration, "Warning: unable to load configuration.  Assuming default settings.");
                 }
             }
 
@@ -417,7 +417,7 @@ namespace Contralto
             //
             if (!File.Exists(configFilePath))
             {
-                Console.WriteLine("Configuration file {0} does not exist or cannot be accessed.  Using default settings.", configFilePath);
+                Log.Write(LogType.Warning, LogComponent.Configuration, "Configuration file {0} does not exist or cannot be accessed.  Using default settings.", configFilePath);
                 return;
             }
 
@@ -451,8 +451,7 @@ namespace Contralto
 
                     if (tokens.Length < 2)
                     {
-                        Console.WriteLine(
-                            "{0} line {1}: Invalid syntax.", configFilePath, lineNumber);
+                        Log.Write(LogType.Warning, LogComponent.Configuration, "{0} line {1}: Invalid syntax.", configFilePath, lineNumber);
                         continue;
                     }
 
@@ -561,16 +560,14 @@ namespace Contralto
                             }
                             catch
                             {
-                                Console.WriteLine(
-                                    "{0} line {1}: Value '{2}' is invalid for parameter '{3}'.", configFilePath, lineNumber, value, parameter);
+                                Log.Write(LogType.Warning, LogComponent.Configuration, "{0} line {1}: Value '{2}' is invalid for parameter '{3}'.", configFilePath, lineNumber, value, parameter);
                             }
                         }
                     }
 
                     if (!bMatch)
                     {
-                        Console.WriteLine(
-                            "{0} line {1}: Unknown configuration parameter '{2}'.", configFilePath, lineNumber, parameter);
+                        Log.Write(LogType.Warning, LogComponent.Configuration, "{0} line {1}: Unknown configuration parameter '{2}'.", configFilePath, lineNumber, parameter);
                     }
                 }
             }

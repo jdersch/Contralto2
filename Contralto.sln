@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContraltoUI", "ContraltoUI\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contralto", "Contralto\Contralto.csproj", "{32B69575-A26F-4B09-9C7A-228B9CCD1C27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContraltoLib", "ContraltoLib\ContraltoLib.csproj", "{F679C754-43AE-4199-B22B-460F8F3E0E52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContraltoLib", "ContraltoLib\ContraltoLib.csproj", "{F679C754-43AE-4199-B22B-460F8F3E0E52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

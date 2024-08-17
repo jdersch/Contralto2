@@ -38,6 +38,7 @@ using System.Linq;
 using ContraltoUI.Views;
 using System.Threading;
 using Contralto.Scripting;
+using Avalonia.Controls;
 
 namespace ContraltoUI.ViewModels;
 
@@ -81,6 +82,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
         ShowSystemConfigurationDialog = ReactiveCommand.Create(OnShowSystemConfigurationDialog);
         ShowAlternateBootDialog = ReactiveCommand.Create(OnShowAlternateBootDialog);
         ShowDebuggerWindow = ReactiveCommand.Create(OnShowDebuggerWindow);
+        ToggleFullScreen = ReactiveCommand.Create(OnToggleFullScreen);
 
         // Help menu commands
         ShowAboutDialog = ReactiveCommand.Create(OnShowAboutDialog);
@@ -92,6 +94,12 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
         _system.Controller.ErrorCallback += OnSystemExecutionError;
         _system.Controller.ShutdownCallback += OnSystemInternalShutdown;
+
+        // Force fullscreen display in Kiosk mode
+        if (_system.Configuration.KioskMode)
+        {
+            _fullScreenDisplay = true;
+        }
 
         // Render the initial bitmap to force it to have a size when databound
         Render();
@@ -111,7 +119,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
     }
 
     // The below properties are used to work around desktop high-DPI scaling so that
-    // Alto display pixels map directly to host display pixels without any scaling --
+    // Alto display pixels map directly to host display pixels without fractional scaling --
     // as far as I can tell there's no way to ask Avalonia to simply display a bitmap without
     // scaling applied.
     // This way we can apply our own integer-scaling to the display to make it look nice and
@@ -143,6 +151,12 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
     public bool CanRecordScript => !ScriptManager.IsRecording && !ScriptManager.IsPlaying;
 
     public bool CanPlayScript => !ScriptManager.IsRecording && !ScriptManager.IsPlaying;
+
+    public bool FullScreenDisplay => _fullScreenDisplay;
+
+    public WindowState WindowState => _fullScreenDisplay ? WindowState.FullScreen : WindowState.Normal;
+
+    public bool KioskMode => _system.Configuration.KioskMode;
 
     public string ExecutionStatus
     {
@@ -401,10 +415,30 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
         OnPropertyChanged(nameof(ExecutionStatus));
     }
 
+    public ICommand ToggleFullScreen { get; }
+
+    private void OnToggleFullScreen()
+    {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
+        _fullScreenDisplay = !_fullScreenDisplay;
+
+        OnPropertyChanged(nameof(WindowState));
+        OnPropertyChanged(nameof(FullScreenDisplay));
+    }
+
     public ICommand LoadDiabloDrive { get; }
 
     private async void OnLoadDiabloDrive(int driveNumber)
     {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
         // Start async operation to open the dialog.
         var files = await FindWindowByViewModel(this).StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
@@ -452,6 +486,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     private void OnUnloadDiabloDrive(int driveNumber)
     {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
         _system.UnloadDiabloDrive(driveNumber);
         if (driveNumber == 0)
         {
@@ -469,6 +508,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     private async void OnNewDiabloDrive(int driveNumber)
     {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
         var file = await FindWindowByViewModel(this).StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = $"Select location for new Diablo pack image for drive {driveNumber}",
@@ -523,6 +567,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     private async void OnLoadTridentDrive(int driveNumber)
     {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
         // Start async operation to open the dialog.
         var files = await FindWindowByViewModel(this).StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
@@ -562,6 +611,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     private void OnUnloadTridentDrive(int driveNumber)
     {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
         _system.UnloadDiabloDrive(driveNumber);
         _system.Configuration.TridentImages[driveNumber] = null;
         OnPropertyChanged(nameof(DiabloDriveNames));
@@ -571,6 +625,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     private async void OnNewTridentDrive(int driveNumber)
     {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
         var file = await FindWindowByViewModel(this).StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = $"Select location for new Trident pack image for drive {driveNumber}",
@@ -616,6 +675,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     private async void OnShowSystemConfigurationDialog()
     {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
         ConfigurationViewModel vm = new ConfigurationViewModel(_system);
         ConfigurationDialog configurationDialog = new ConfigurationDialog()
         {
@@ -634,6 +698,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     private async void OnShowAlternateBootDialog()
     {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
         ConfigurationViewModel vm = new ConfigurationViewModel(_system);
         AlternateBootDialog bootDialog = new AlternateBootDialog()
         {
@@ -647,6 +716,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     private void OnShowDebuggerWindow()
     {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
         ConfigurationViewModel vm = new ConfigurationViewModel(_system);
         DebuggerWindow debuggerWindow = new DebuggerWindow()
         {
@@ -660,6 +734,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     private async void OnShowAboutDialog()
     {
+        if (_system.Configuration.KioskMode)
+        {
+            return;
+        }
+
         ConfigurationViewModel vm = new ConfigurationViewModel(_system);
         AboutDialog aboutDialog = new AboutDialog()
         {
@@ -1036,6 +1115,9 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
     // Status-line information
     private Timer           _uiTimer;
     private int             _fieldsRendered;
+
+    // Display bits
+    private bool _fullScreenDisplay;
 
     //
     // Buffer for display pixels.  This is 1bpp, directly written by the Alto.

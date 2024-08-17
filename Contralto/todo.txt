@@ -1,15 +1,18 @@
 ﻿X configuration storage
 X cross-platform frame timing for throttling
 X UI for status info, etc. as in og contralto
-- sound
+X sound
 X screen scaling w/out bilinear interpolation
 X screen phosphor  (just use SDL for these two?)
-- full-screen, kiosk mode, auto-pause mode
+X full-screen
+X kiosk mode
+- auto-pause mode
 X hook scripting up to new ui
 - fix mouse cursor
 X keyboard accelerators
-- command line options
-- eliminate Console.WriteLine() calls; have some UI to view & configure log output
+X command line options
+X eliminate Console.WriteLine() calls; 
+- have some UI to view & configure log output
 - eliminate as many TODO: comments as possible
 - update readme
 

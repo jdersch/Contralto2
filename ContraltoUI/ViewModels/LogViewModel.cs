@@ -20,31 +20,37 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-using System;
+using Contralto;
+using Contralto.Logging;
+using System.Collections.Generic;
 
-using Avalonia;
-using Avalonia.ReactiveUI;
-using ContraltoUI;
 
-namespace Contralto;
-
-class Program
+namespace ContraltoUI.ViewModels
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
-    [STAThread]
-    public static void Main(string[] args)
+    public partial class LogViewModel : ViewModelBase
     {
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        public LogViewModel(AltoSystem system)
+        {
+            _system = system;
+
+            Log.Updated += OnLogUpdated;
+        }
+
+        private void OnLogUpdated(object? sender, System.EventArgs e)
+        {
+            OnPropertyChanged(nameof(LogText));
+        }
+
+        public override void OnApplicationExit()
+        {
+
+        }
+
+        public IEnumerable<string> LogText => Log.LogText;
+
+
+        private AltoSystem _system;
+
+       
     }
-
-    // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .UseReactiveUI()
-            .WithInterFont()
-            .LogToTrace();
-
 }

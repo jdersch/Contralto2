@@ -247,7 +247,6 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.1.0-rc2" />
     <PackageReference Include="iTextSharp" Version="5.5.13.3" />
-    <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="SharpPcap" Version="6.3.0" />
   </ItemGroup>
 

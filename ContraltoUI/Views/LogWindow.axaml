@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:ContraltoUI.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ContraltoUI.Views.LogWindow"
+        xmlns:views="clr-namespace:ContraltoUI.Views"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        x:DataType="vm:LogViewModel"
+        Icon="/Assets/Alto.ico"
+        Title="Log">
+    <StackPanel Orientation="Vertical">
+        <TextBox Text="{Binding LogText}" IsReadOnly="True" Width="800" Height="400"/>
+        <Button HorizontalAlignment="Right">Close</Button>
+    </StackPanel>
+</Window>
