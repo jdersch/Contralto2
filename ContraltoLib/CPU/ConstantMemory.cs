@@ -20,6 +20,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Contralto.CPU
 {
     /// <summary>
@@ -34,24 +36,15 @@ namespace Contralto.CPU
 
         private void Init(Configuration configuration)
         {
-            // TODO: Same fucking design-time bullshit as ucode
-            try
+            if (configuration.SystemType == SystemType.AltoI)
             {
-                if (configuration.SystemType == SystemType.AltoI)
-                {
-                    LoadConstants(_constantRomsAltoI, true);
-                    LoadACSource(_acSourceRoms, true);
-                }
-                else
-                {
-                    LoadConstants(_constantRomsAltoII, false);
-                    LoadACSource(_acSourceRoms, true);
-                }
+                LoadConstants(_constantRomsAltoI, true);
+                LoadACSource(_acSourceRoms, true);
             }
-            catch
+            else
             {
-                _constantRom = new ushort[256];
-                _acSourceRom = new byte[256];
+                LoadConstants(_constantRomsAltoII, false);
+                LoadACSource(_acSourceRoms, true);
             }
         }
 
@@ -118,7 +111,7 @@ namespace Contralto.CPU
                 {
                     throw new InvalidOperationException("ROM file should be 256 bytes in length");
                 }
-                byte[] data = new byte[fs.Length];                
+                byte[] data = new byte[fs.Length];
                 fs.Read(data, 0, (int)fs.Length);
 
                 // Copy in the data, modifying the address as required.
@@ -205,7 +198,7 @@ namespace Contralto.CPU
 
         private RomFile _acSourceRoms = new RomFile(Configuration.GetRomPath("ACSOURCE.NEW"), 0x000, 0);
 
-        private ushort[] _constantRom;
-        private byte[] _acSourceRom;
+        private ushort[] _constantRom = null!;
+        private byte[] _acSourceRom = null!;
     }
 }

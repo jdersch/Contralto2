@@ -3,18 +3,64 @@
     <OutputType>WinExe</OutputType>
     <!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
     One for Windows with net7.0-windows TFM, one for MacOS with net7.0-macos and one with net7.0 TFM for Linux.-->
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <StartupObject>Contralto.Program</StartupObject>
     <PlatformTarget>x64</PlatformTarget>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Disks\bcpl.dsk" />
+    <None Remove="Disks\bravox54.dsk" />
+    <None Remove="Disks\diag.dsk" />
+    <None Remove="Disks\games.dsk" />
+    <None Remove="Disks\music.dsk" />
+    <None Remove="Disks\nonprog.dsk" />
+    <None Remove="Disks\spruce-server-t300.zip" />
+    <None Remove="Disks\spruce-server.dsk" />
+    <None Remove="Disks\spruce-server.dsk300" />
+    <None Remove="Disks\xmsmall.dsk" />
+    <None Remove="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Disks\bcpl.dsk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Disks\bravox54.dsk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Disks\diag.dsk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Disks\games.dsk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Disks\music.dsk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Disks\nonprog.dsk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Disks\spruce-server-t300.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Disks\spruce-server.dsk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Disks\xmsmall.dsk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="11.1.0-rc2" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.0-rc2" />
-    <PackageReference Include="System.Resources.Extensions" Version="9.0.0-preview.1.24080.9" />
   </ItemGroup>
 
   <ItemGroup>

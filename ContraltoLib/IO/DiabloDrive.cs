@@ -117,7 +117,7 @@ namespace Contralto.IO
             get { return _pack != null; }
         }
 
-        public IDiskPack Pack
+        public IDiskPack? Pack
         {
             get { return _pack; }
         }
@@ -366,16 +366,16 @@ namespace Contralto.IO
         //
         // Current disk position
         //
-        private int _cylinder;        
+        private int _cylinder;
         private int _head;
-        private int _sector;       
+        private int _sector;
 
-        private bool _sectorModified;        
+        private bool _sectorModified;
 
         private DataCell[] _sectorData = new DataCell[SectorWordCount];
 
 
         // The pack loaded into the drive
-        IDiskPack _pack;
+        IDiskPack? _pack;
     }
 }

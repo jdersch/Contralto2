@@ -98,15 +98,13 @@ namespace ContraltoUI
         /// </remarks>
         public void Stop(bool joinThread = true)
         {
-            if (!_isRunning)
+            if (!_isRunning || _thread == null)
             {
                 return;
             }
 
             _isRunning = false;
 
-            // Even if _thread.Join may take time it is guaranteed that 
-            // Elapsed event is never called overlapped with different threads
             if (joinThread && Thread.CurrentThread != _thread)
             {
                 _thread.Join();
@@ -192,7 +190,7 @@ namespace ContraltoUI
         
         private volatile float _interval;
         private volatile bool _isRunning;
-        private Thread _thread;
+        private Thread? _thread;
         private AutoResetEvent _event;
     }
 }

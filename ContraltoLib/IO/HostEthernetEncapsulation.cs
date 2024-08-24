@@ -50,13 +50,13 @@ namespace Contralto.IO
 
         public string Name;        
         public string Description;
-    }    
+    }
 
     /// <summary>
     /// Implements the logic for encapsulating a 3mbit ethernet packet into a 10mb packet and sending it over an actual
     /// ethernet interface controlled by the host operating system.
     /// 
-    /// This uses PCap.NET to do the dirty work.
+    /// This uses SharpPcap to do the dirty work.
     /// </summary>
     public class HostEthernetEncapsulation : IPacketEncapsulation
     {
@@ -205,26 +205,21 @@ namespace Contralto.IO
                 try
                 {
                     packet = (EthernetPacket)Packet.ParsePacket(LinkLayers.Ethernet, e.GetPacket().Data);
-                }
-                catch (Exception ex)
-                {
-                    // Just eat this, log a message.
-                    Log.Write(LogType.Error, LogComponent.HostNetworkInterface, "Failed to parse 3mbit packet.  Exception {0}", ex.Message);
-                    packet = null;
-                }
-
-                if (packet != null)
-                {
                     if ((int)packet.Type == _3mbitFrameType &&                           // encapsulated 3mbit frames
                         (!packet.SourceHardwareAddress.Equals(_10mbitSourceAddress)))    // and not sent by this emulator
                     {
                         Log.Write(LogComponent.HostNetworkInterface, "Received encapsulated 3mbit packet.");
-                        _callback(new System.IO.MemoryStream(packet.PayloadData));
+                        _callback?.Invoke(new MemoryStream(packet.PayloadData));
                     }
                     else
                     {
                         // Not for us, discard the packet.
                     }
+                }
+                catch (Exception ex)
+                {
+                    // Just eat this, log a message.
+                    Log.Write(LogType.Error, LogComponent.HostNetworkInterface, "Failed to parse 3mbit packet.  Exception {0}", ex.Message);
                 }
             }
         } 
@@ -263,7 +258,7 @@ namespace Contralto.IO
         }
 
         private ILiveDevice _interface;
-        private ReceivePacketDelegate _callback;
+        private ReceivePacketDelegate? _callback;
 
         private const int _3mbitFrameType = 0xbeef;     // easy to identify, ostensibly unused by anything of any import        
 

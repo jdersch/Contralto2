@@ -39,7 +39,7 @@ namespace Contralto.Scripting
         /// <summary>
         /// Fired when playback of the script has completed or is stopped.
         /// </summary>
-        public event EventHandler PlaybackCompleted;
+        public event EventHandler? PlaybackCompleted;
 
         public void Start()
         {
@@ -79,15 +79,20 @@ namespace Contralto.Scripting
                 // Playback is complete.
                 //
                 Log.Write(LogComponent.Scripting, "Playback completed.");
-                PlaybackCompleted(this, null);
+                PlaybackCompleted?.Invoke(this, null!);
             }
         }
 
-        private void OnEvent(ulong skewNsec, object context)
+        private void OnEvent(ulong skewNsec, object? context)
         {
             // Replay the action.
             if (!_stopPlayback)
             {
+                if (context == null)
+                {
+                    throw new InvalidOperationException("Script event callback context cannot be null");
+                }
+
                 ScriptAction action = (ScriptAction)context;
                 Log.Write(LogComponent.Scripting, "Invoking action {0}", action);
 
@@ -109,14 +114,14 @@ namespace Contralto.Scripting
             else
             {
                 Log.Write(LogComponent.Scripting, "Playback stopped.");
-                PlaybackCompleted(this, null);
+                PlaybackCompleted?.Invoke(this, null!);
             }
         }
 
         private AltoSystem _system;
         private ScriptReader _scriptReader;
 
-        private ScriptAction _currentAction;
+        private ScriptAction? _currentAction;
 
         private bool _stopPlayback;
     }

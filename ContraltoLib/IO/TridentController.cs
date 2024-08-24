@@ -22,6 +22,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using Contralto.CPU;
 using Contralto.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 
 namespace Contralto.IO
@@ -54,13 +55,7 @@ namespace Contralto.IO
         public TridentController(AltoSystem system)
         {
             _system = system;
-
-            //
-            // We initialize 16 drives even though the
-            // controller only technically supports 8.
-            // TODO: detail
-            //
-            _drives = new TridentDrive[16];
+            _drives = new TridentDrive[8];
 
             for(int i=0;i<_drives.Length;i++)
             {
@@ -70,6 +65,7 @@ namespace Contralto.IO
             Reset();
         }
 
+        [MemberNotNull(nameof(_sectorEvent), nameof(_outputFifoEvent), nameof(_readWordEvent), nameof(_inputFifo), nameof(_outputFifo))]
         public void Reset()
         {
             _runEnable = false;
@@ -81,7 +77,6 @@ namespace Contralto.IO
             _outputLate = false;
             _inputLate = false;
             _compareError = false;
-            _readOnly = false;
             _offset = false;
 
             _selectedDrive = 0;
@@ -117,7 +112,6 @@ namespace Contralto.IO
             _outputLate = false;
             _inputLate = false;
             _compareError = false;
-            _readOnly = false;
             _offset = false;
 
             _commandState = CommandState.Command;
@@ -134,7 +128,7 @@ namespace Contralto.IO
             TridentDrive d = _drives[drive];
             if (d.IsLoaded)
             {
-                d.Pack.Save();
+                d.Pack?.Save();
             }
         }
 
@@ -322,7 +316,7 @@ namespace Contralto.IO
             }
         }
 
-        private void OutputFifoCallback(ulong skewNsec, object context)
+        private void OutputFifoCallback(ulong skewNsec, object? context)
         {
             switch (_commandState)
             {
@@ -532,7 +526,7 @@ namespace Contralto.IO
                             }
                             else
                             {
-                                if (SelectedDrive.Head + 1 >= SelectedDrive.Pack.Geometry.Heads)
+                                if (SelectedDrive.Head + 1 >= SelectedDrive.Pack?.Geometry.Heads)
                                 {
                                     _headOverflow = true;
                                     _deviceCheck = true;
@@ -649,7 +643,7 @@ namespace Contralto.IO
                         }
                         else
                         {
-                            if (head >= SelectedDrive.Pack.Geometry.Heads)
+                            if (head >= SelectedDrive.Pack?.Geometry.Heads)
                             {
                                 _headOverflow = true;
                                 _deviceCheck = true;
@@ -718,7 +712,7 @@ namespace Contralto.IO
             }
         }
 
-        private void ReadWordCallback(ulong skewNsec, object context)
+        private void ReadWordCallback(ulong skewNsec, object? context)
         {
             if (_readWordCount > 0)
             {
@@ -879,7 +873,7 @@ namespace Contralto.IO
             }
         }
 
-        private void SectorCallback(ulong skewNsec, object context)
+        private void SectorCallback(ulong skewNsec, object? context)
         {
             // Move to the next sector if the controller is running
             // and the disk is ready.
@@ -1067,8 +1061,7 @@ namespace Contralto.IO
         private bool _outputLate;
         private bool _inputLate;
         private bool _compareError;
-        private bool _readOnly;
-        private bool _offset;     
+        private bool _offset;
 
         // Current sector
         private int _sector;

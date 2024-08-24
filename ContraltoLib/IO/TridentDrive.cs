@@ -20,7 +20,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+using Contralto.CPU;
 using Contralto.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Contralto.IO
 {
@@ -81,7 +83,7 @@ namespace Contralto.IO
                 _pack.Dispose();
             }
 
-            _pack = null;
+            _pack = null!;
             Reset();
         }
 
@@ -95,7 +97,7 @@ namespace Contralto.IO
             get { return _notReady; }
         }
 
-        public IDiskPack Pack
+        public IDiskPack? Pack
         {
             get { return _pack; }
         }
@@ -139,7 +141,7 @@ namespace Contralto.IO
 
         public bool Seek(int destCylinder)
         {
-            if (destCylinder > _pack.Geometry.Cylinders - 1)
+            if (_pack == null || destCylinder > _pack.Geometry.Cylinders - 1)
             {
                 Log.Write(LogType.Error, LogComponent.TridentController, "Specified cylinder {0} is out of range.  Seek aborted, device check raised.", destCylinder);                
                 return false;
@@ -275,7 +277,7 @@ namespace Contralto.IO
             }
         }
 
-        private void SeekCallback(ulong skewNsec, object context)
+        private void SeekCallback(ulong skewNsec, object? context)
         {
             Log.Write(LogComponent.TridentDisk, "Seek to {0} complete.", _destCylinder);
 
@@ -321,7 +323,15 @@ namespace Contralto.IO
 
         private DiskSector CurrentSector
         {
-            get { return _trackCache[_sector]; }
+            get 
+            { 
+                if (_trackCache == null)
+                {
+                    throw new InvalidOperationException("Attempt to read with no image loaded.");
+                }
+
+                return _trackCache[_sector]; 
+            }
         }
 
         private AltoSystem _system;
@@ -334,7 +344,7 @@ namespace Contralto.IO
         private int _sector;
 
         // The pack loaded into the drive
-        IDiskPack _pack;
+        IDiskPack? _pack;
 
         // Drive status
         private bool _notReady;
@@ -348,6 +358,6 @@ namespace Contralto.IO
         //
         // The track cache
         //
-        private DiskSector[] _trackCache;
+        private DiskSector[]? _trackCache;
     }
 }

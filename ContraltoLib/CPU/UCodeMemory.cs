@@ -21,6 +21,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using Contralto.Logging;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Contralto.CPU
@@ -54,10 +55,11 @@ namespace Contralto.CPU
     /// </summary>
     public class UCodeMemory
     {
-        public UCodeMemory(AltoSystem system)
+        public UCodeMemory(AltoSystem system, ControlROM controlRom)
         {
-            _system = system;
             _systemType = system.Configuration.SystemType;
+            _controlROM = controlRom;
+            Init();
         }
 
         public void Reset()
@@ -65,29 +67,20 @@ namespace Contralto.CPU
             Init();
         }
 
+        [MemberNotNull(nameof(_uCodeRam), nameof(_uCodeRom), nameof(_decodeCache), nameof(_microcodeBank))]
         private void Init()
         {
             //
             // Max 3 banks of microcode RAM
             _uCodeRam = new UInt32[1024 * 3];
 
-            // TODO: we're putting a try/catch around this because the Avalonia designer
-            // explodes when the viewmodel is instantiated because the paths are wrong.
-            // need to figure out a better solution here.
-            try
+            if (_systemType == SystemType.AltoI)
             {
-                if (_systemType == SystemType.AltoI)
-                {
-                    LoadAltoIMicrocode(_uCodeRomsAltoI);
-                }
-                else
-                {
-                    LoadAltoIIMicrocode(_uCodeRomsAltoII);
-                }
+                LoadAltoIMicrocode(_uCodeRomsAltoI);
             }
-            catch
+            else
             {
-                _uCodeRom = new UInt32[1024 * 3];
+                LoadAltoIIMicrocode(_uCodeRomsAltoII);
             }
 
             //
@@ -114,7 +107,7 @@ namespace Contralto.CPU
         public void LoadBanksFromRMR(ushort rmr)
         {
             for(int i=0;i<16;i++)
-            {                
+            {
                 _microcodeBank[i] = (rmr & (1 << i)) == 0 ? MicrocodeBank.RAM0 : MicrocodeBank.ROM0;
             }
         }
@@ -170,7 +163,7 @@ namespace Contralto.CPU
             switch (_systemType)
             {
                 case SystemType.AltoI:
-                case SystemType.OneKRom:                
+                case SystemType.OneKRom:
                     _microcodeBank[(int)task] = _microcodeBank[(int)task] == MicrocodeBank.ROM0 ? MicrocodeBank.RAM0 : MicrocodeBank.ROM0;
                     break;
 
@@ -191,7 +184,7 @@ namespace Contralto.CPU
                     }
                     break;
 
-                case SystemType.ThreeKRam:                    
+                case SystemType.ThreeKRam:
                     if ((nextAddress & 0x100) == 0)
                     {
                         switch(_microcodeBank[(int)task])
@@ -227,7 +220,7 @@ namespace Contralto.CPU
                                 _microcodeBank[(int)task] = MicrocodeBank.RAM0;
                                 break;
                         }
-                    }                    
+                    }
                     break;
             }
 
@@ -239,8 +232,8 @@ namespace Contralto.CPU
             if (!_ramSelect)
             {
                 throw new NotImplementedException("Read from microcode ROM not implemented.");
-            }            
-                         
+            }
+
             Log.Write(Logging.LogComponent.Microcode, "CRAM address for read: Bank {0}, RAM {1}, lowhalf {2} addr {3}",
                 _ramBank,
                 _ramSelect,
@@ -266,17 +259,7 @@ namespace Contralto.CPU
             {
                 // No-op, can't write to ROM.
                 return;
-            }           
-            
-            /* 
-            Log.Write(Logging.LogComponent.Microcode, "CRAM address for write: Bank {0}, addr {1}",
-                _ramBank,                
-                Conversion.ToOctal(_ramAddr));
-
-            Log.Write(Logging.LogComponent.Microcode, "CRAM write of low {0}, high {1}",                
-                Conversion.ToOctal(low),
-                Conversion.ToOctal(high));
-            */
+            }
 
             ushort address = (ushort)(_ramAddr + _ramBank * 1024);
             
@@ -297,6 +280,7 @@ namespace Contralto.CPU
             return _decodeCache[address + (int)_microcodeBank[(int)task] * 1024];
         }
 
+        [MemberNotNull(nameof(_uCodeRom))]
         private void LoadAltoIIMicrocode(RomFile[] romInfo)
         {
             _uCodeRom = new UInt32[2048];
@@ -324,13 +308,14 @@ namespace Contralto.CPU
                     }
                 }
             }
-                       
+
             for(int i=0;i<_uCodeRom.Length;i++)
             {               
                 _uCodeRom[i] = MapWord(_uCodeRom[i]);
             } 
         }
 
+        [MemberNotNull(nameof(_uCodeRom))]
         private void LoadAltoIMicrocode(RomFile[] romInfo)
         {
             _uCodeRom = new UInt32[1024];
@@ -404,15 +389,15 @@ namespace Contralto.CPU
         {
             for(int i=0;i<_uCodeRom.Length;i++)
             {
-                _decodeCache[i] = new MicroInstruction(_uCodeRom[i], _system.CPU.ControlROM);
+                _decodeCache[i] = new MicroInstruction(_uCodeRom[i], _controlROM);
             }
         }
 
         private void UpdateRAMCache(ushort address)
         {
             UInt32 instructionWord = _uCodeRam[address];
-            _decodeCache[2048 + address] = new MicroInstruction(instructionWord, _system.CPU.ControlROM);
-        }       
+            _decodeCache[2048 + address] = new MicroInstruction(instructionWord, _controlROM);
+        }
 
         private static RomFile[] _uCodeRomsAltoI =
         {
@@ -493,7 +478,7 @@ namespace Contralto.CPU
         private bool _lowHalfsel;
         private int _ramAddr;
 
-        private AltoSystem _system;
+        private ControlROM _controlROM;
         private SystemType _systemType;
 
     }

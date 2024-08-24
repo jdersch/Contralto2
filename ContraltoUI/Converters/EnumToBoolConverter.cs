@@ -29,28 +29,25 @@ namespace ContraltoUI.Converters
 {
     public class EnumToBoolConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            bool? val = value?.Equals(parameter);
-            return val;
+            return value?.Equals(parameter);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            object val = value?.Equals(true) == true ? parameter : BindingOperations.DoNothing;
-            return val;
+            return value?.Equals(true) == true ? parameter : BindingOperations.DoNothing;
         }
     }
 
     public class InvertedEnumToBoolConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            bool? val = !value?.Equals(parameter);
-            return val;
+            return !value?.Equals(parameter);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             return !value?.Equals(true) == true ? parameter : BindingOperations.DoNothing;
         }

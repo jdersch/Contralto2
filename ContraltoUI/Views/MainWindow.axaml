@@ -249,8 +249,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <MenuItem Header="About" Command="{Binding ShowAboutDialog}" HotKey="Ctrl+Alt+H"/>
             </MenuItem>
         </Menu>
-        
-        <views:AltoDisplay DockPanel.Dock="Top"/>
+
+        <Border BorderThickness="0" DockPanel.Dock="Top">
+            <views:AltoDisplay/>
+        </Border>
         
         <Border BorderBrush="Gray" BorderThickness="1" IsVisible="{Binding !FullScreenDisplay}">
             <StackPanel Background="{DynamicResource MenuFlyoutItemBackground}" DockPanel.Dock="Bottom" Orientation="Horizontal">

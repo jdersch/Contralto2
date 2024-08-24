@@ -20,6 +20,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Contralto
@@ -30,14 +31,14 @@ namespace Contralto
     /// </summary>    
     /// <param name="skew">The delta between the requested exec time and the actual exec time (in nsec)</param>
     /// <param name="context">An object containing context useful to the scheduler of the event</param>
-    public delegate void SchedulerEventCallback(ulong skewNsec, object context);
+    public delegate void SchedulerEventCallback(ulong skewNsec, object? context);
 
     /// <summary>
     /// An Event encapsulates a callback and associated context that is scheduled for a future timestamp.
     /// </summary>
     public class Event
     {
-        public Event(ulong timestampNsec, object context, SchedulerEventCallback callback)
+        public Event(ulong timestampNsec, object? context, SchedulerEventCallback callback)
         {
             _timestampNsec = timestampNsec;
             _context = context;
@@ -57,7 +58,7 @@ namespace Contralto
         /// An object containing context to be passed to the
         /// event callback.
         /// </summary>
-        public object Context
+        public object? Context
         {
             get { return _context; }
             set { _context = value; }
@@ -72,7 +73,7 @@ namespace Contralto
         }
 
         private ulong _timestampNsec;
-        private object _context;
+        private object? _context;
         private SchedulerEventCallback _callback;
     }
 
@@ -97,6 +98,7 @@ namespace Contralto
             get { return _currentTimeNsec; }
         }
 
+        [MemberNotNull(nameof(_schedule))]
         public void Reset()
         {
             _schedule = new SchedulerQueue();
@@ -117,9 +119,9 @@ namespace Contralto
             while (_schedule.Top != null && _currentTimeNsec >= _schedule.Top.TimestampNsec)
             {
                 // Pop the top event and fire the callback.
-                Event e = _schedule.Pop();
+                Event? e = _schedule.Pop();
 
-                e.EventCallback(_currentTimeNsec - e.TimestampNsec, e.Context);
+                e?.EventCallback(_currentTimeNsec - e.TimestampNsec, e.Context);
             }
         }
 
@@ -164,7 +166,7 @@ namespace Contralto
             _queue = new LinkedList<Event>();
         }
 
-        public Event Top
+        public Event? Top
         {
             get
             {
@@ -180,7 +182,7 @@ namespace Contralto
         public void Push(Event e)
         {
             // Degenerate case:  list is empty or new entry is earlier than the head of the list.
-            if (_queue.Count == 0 || _top.TimestampNsec >= e.TimestampNsec)
+            if (_queue.Count == 0 || _top?.TimestampNsec >= e.TimestampNsec)
             {
                 _queue.AddFirst(e);
                 _top = e;
@@ -195,7 +197,7 @@ namespace Contralto
             // search may be more performant if this is not the case.
             // TODO: profile this and ensure this is the case.
             //
-            LinkedListNode<Event> current = _queue.First;
+            LinkedListNode<Event>? current = _queue.First;
             while (current != null)
             {
                 if (current.Value.TimestampNsec >= e.TimestampNsec)
@@ -211,21 +213,14 @@ namespace Contralto
             _queue.AddLast(e);
         }
 
-        public Event Pop()
+        public Event? Pop()
         {
-            Event e = _top;
+            Event? e = _top;
             _queue.RemoveFirst();
 
             _top = _queue.First != null ? _queue.First.Value : null;
 
             return e;
-        }
-
-        public void Remove(Event e)
-        {
-            _queue.Remove(e);
-            _top = _queue.First.Value;
-           
         }
 
         /// <summary>
@@ -236,6 +231,6 @@ namespace Contralto
         /// <summary>
         /// The Top of the queue (null if queue is empty).
         /// </summary>
-        private Event _top;
+        private Event? _top;
     }
 }

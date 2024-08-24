@@ -22,6 +22,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using Contralto.CPU;
 using Contralto.Logging;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Contralto.Memory
@@ -39,7 +40,7 @@ namespace Contralto.Memory
             {
                 _addresses = new MemoryRange[]
                 {
-                    new MemoryRange(0, _memTop),                                     // Main bank of RAM to 176777; IO page above this.                    
+                    new MemoryRange(0, _memTop),                                     // Main bank of RAM to 176777; IO page above this.
                 };
             }
             else
@@ -65,6 +66,7 @@ namespace Contralto.Memory
         /// <summary>
         /// Full reset, clears all memory.
         /// </summary>
+        [MemberNotNull(nameof(_mem), nameof(_xmBanks), nameof(_xmBanksAlternate), nameof(_xmBanksNormal))]
         public void Reset()
         {
             // 4 64K banks, regardless of system type.  (Alto Is just won't use the extra memory.)

@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
              x:DataType="vm:AltoUIViewModel"
              Focusable="True"
              >
-        <Border Background="Black" BorderThickness="0">
+        <Border Background="Black" BorderThickness="1">
             <!-- Just an intense mess of scaling and binding here to get Alto display pixels to map directly
                  to display pixels without desktop DPI scaling getting in the way.  Ugh.  -->
             <Image

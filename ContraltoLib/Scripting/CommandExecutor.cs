@@ -20,6 +20,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 
@@ -46,7 +47,7 @@ namespace Contralto.Scripting
     /// </summary>
     public class DebuggerCommand
     {
-        public DebuggerCommand(string name, String description, String usage, MethodInvokeInfo methodInvoke)
+        public DebuggerCommand(string name, String? description, String? usage, MethodInvokeInfo? methodInvoke)
         {
             Name = name.Trim().ToLower();
             Description = description;
@@ -61,9 +62,9 @@ namespace Contralto.Scripting
             SubCommands = new List<DebuggerCommand>();
         }
         
-        public string Name;
-        public string Description;
-        public string Usage;
+        public string? Name;
+        public string? Description;
+        public string? Usage;
         public List<MethodInvokeInfo> Methods;
         public List<DebuggerCommand> SubCommands;
 
@@ -75,7 +76,7 @@ namespace Contralto.Scripting
             }
             else
             {
-                return this.Name;
+                return !string.IsNullOrEmpty(this.Name) ? this.Name : "<noname>";
             }
         }
 
@@ -88,7 +89,7 @@ namespace Contralto.Scripting
             }
 
             // Check the root to see if a node for the first incoming word has already been added
-            DebuggerCommand subNode = FindSubNodeByName(words[0]);
+            DebuggerCommand? subNode = FindSubNodeByName(words[0]);
 
             if (subNode == null)
             {
@@ -138,9 +139,9 @@ namespace Contralto.Scripting
             subNode.AddSubNode(words, methodInfo);
         }
 
-        public DebuggerCommand FindSubNodeByName(string name)
+        public DebuggerCommand? FindSubNodeByName(string name)
         {
-            DebuggerCommand found = null;
+            DebuggerCommand? found = null;
 
             foreach (DebuggerCommand sub in SubCommands)
             {
@@ -168,17 +169,17 @@ namespace Contralto.Scripting
         {
             List<object> commandList = new List<object>(commandObjects);
             BuildCommandTree(commandList);
-        }               
+        }
 
-        public CommandResult ExecuteScript(string scriptFile)
+        public CommandResult? ExecuteScript(string scriptFile)
         {
-            CommandResult state = CommandResult.Normal;
+            CommandResult? state = CommandResult.Normal;
 
             using (StreamReader sr = new StreamReader(scriptFile))
             {
                 while (!sr.EndOfStream)
                 {
-                    string line = sr.ReadLine();
+                    string? line = sr.ReadLine();
 
                     if (!string.IsNullOrWhiteSpace(line))
                     {
@@ -191,19 +192,19 @@ namespace Contralto.Scripting
             return state;
         }
 
-        public DebuggerCommand CommandTreeRoot
+        public DebuggerCommand? CommandTreeRoot
         {
             get { return _commandRoot; }
         }
 
-        public CommandResult ExecuteCommand(string line)
+        public CommandResult? ExecuteCommand(string line)
         {
             return ExecuteLine(line);
         }
 
-        private CommandResult ExecuteLine(string line)
+        private CommandResult? ExecuteLine(string line)
         {
-            CommandResult next = CommandResult.Normal;
+            CommandResult? next = CommandResult.Normal;
                 
             if (line.StartsWith("#"))
             {
@@ -218,8 +219,8 @@ namespace Contralto.Scripting
             }
             else
             {
-                string[] args = null;
-                DebuggerCommand command = GetDebuggerCommandFromCommandString(line, out args);
+                string[]? args;
+                DebuggerCommand? command = GetDebuggerCommandFromCommandString(line, out args);
 
                 if (command == null)
                 {
@@ -235,9 +236,9 @@ namespace Contralto.Scripting
             return next;
         }
 
-        private CommandResult InvokeConsoleMethod(DebuggerCommand command, string[] args)
+        private CommandResult? InvokeConsoleMethod(DebuggerCommand command, string[]? args)
         {
-            MethodInvokeInfo method = null;
+            MethodInvokeInfo? method = null;
 
             //
             // Find the method that matches the arg count we were passed
@@ -248,8 +249,8 @@ namespace Contralto.Scripting
             {
                 ParameterInfo[] paramInfo = m.Method.GetParameters();
 
-                if (args == null && paramInfo.Length == 0 ||
-                    paramInfo.Length == args.Length)
+                if ((args == null && paramInfo.Length == 0) ||
+                    args != null && paramInfo.Length == args.Length)
                 {
                     // found a match
                     method = m;
@@ -259,12 +260,12 @@ namespace Contralto.Scripting
 
             if (method == null)
             {
-                // invalid argument count.                
+                // invalid argument count.
                 throw new ArgumentException(String.Format("Invalid argument count to command."));
             }
 
             ParameterInfo[] parameterInfo = method.Method.GetParameters(); 
-            object[] invokeParams;
+            object?[]? invokeParams;
 
             if (args == null)
             {
@@ -273,87 +274,87 @@ namespace Contralto.Scripting
             else
             {
                 invokeParams = new object[parameterInfo.Length];
-            }
 
-            int argIndex = 0;
-            for (int paramIndex = 0; paramIndex < parameterInfo.Length; paramIndex++)
-            {
-                ParameterInfo p = parameterInfo[paramIndex];
-
-                if (p.ParameterType.IsEnum)
+                int argIndex = 0;
+                for (int paramIndex = 0; paramIndex < parameterInfo.Length; paramIndex++)
                 {
-                    //
-                    // This is an enumeration type.
-                    // See if we can find an enumerant that matches the argument.
-                    //
-                    FieldInfo[] fields = p.ParameterType.GetFields();
+                    ParameterInfo p = parameterInfo[paramIndex];
 
-                    foreach (FieldInfo f in fields)
+                    if (p.ParameterType.IsEnum)
                     {
-                        if (!f.IsSpecialName && args[argIndex].ToLower() == f.Name.ToLower())
-                        {
-                            invokeParams[paramIndex] = f.GetRawConstantValue();
-                            break;
-                        }
-                    }
-
-                    if (invokeParams[paramIndex] == null)
-                    {
-                        // no match, provide possible values
-                        StringBuilder sb = new StringBuilder(String.Format("Invalid value for parameter {0}.  Possible values are:", paramIndex));
+                        //
+                        // This is an enumeration type.
+                        // See if we can find an enumerant that matches the argument.
+                        //
+                        FieldInfo[] fields = p.ParameterType.GetFields();
 
                         foreach (FieldInfo f in fields)
                         {
-                            if (!f.IsSpecialName)
+                            if (!f.IsSpecialName && args[argIndex].ToLower() == f.Name.ToLower())
                             {
-                                sb.AppendFormat("{0} ", f.Name);
+                                invokeParams[paramIndex] = f.GetRawConstantValue();
+                                break;
                             }
                         }
 
-                        sb.AppendLine();
+                        if (invokeParams[paramIndex] == null)
+                        {
+                            // no match, provide possible values
+                            StringBuilder sb = new StringBuilder(String.Format("Invalid value for parameter {0}.  Possible values are:", paramIndex));
 
-                        throw new ArgumentException(sb.ToString());
-                    }
+                            foreach (FieldInfo f in fields)
+                            {
+                                if (!f.IsSpecialName)
+                                {
+                                    sb.AppendFormat("{0} ", f.Name);
+                                }
+                            }
 
-                    argIndex++;
+                            sb.AppendLine();
 
-                }
-                else if (p.ParameterType.IsArray)
-                {
-                    //
-                    // If a function takes an array type, i should do something here, yeah.
-                    //
-                    argIndex++;
-                }
-                else
-                {
-                    if (p.ParameterType == typeof(bool))
-                    {
-                        invokeParams[paramIndex] = bool.Parse(args[argIndex++]);
+                            throw new ArgumentException(sb.ToString());
+                        }
+
+                        argIndex++;
+
                     }
-                    else if (p.ParameterType == typeof(uint))
+                    else if (p.ParameterType.IsArray)
                     {
-                        invokeParams[paramIndex] = TryParseUint(args[argIndex++]);
-                    }
-                    else if (p.ParameterType == typeof(ushort))
-                    {
-                        invokeParams[paramIndex] = TryParseUshort(args[argIndex++]);
-                    }
-                    else if (p.ParameterType == typeof(string))
-                    {
-                        invokeParams[paramIndex] = args[argIndex++];
-                    }
-                    else if (p.ParameterType == typeof(char))
-                    {
-                        invokeParams[paramIndex] = (char)args[argIndex++][0];
-                    }
-                    else if (p.ParameterType == typeof(float))
-                    {
-                        invokeParams[paramIndex] = float.Parse(args[argIndex++]);
+                        //
+                        // If a function takes an array type, i should do something here, yeah.
+                        //
+                        argIndex++;
                     }
                     else
                     {
-                        throw new ArgumentException(String.Format("Unhandled type for parameter {0}, type {1}", paramIndex, p.ParameterType));
+                        if (p.ParameterType == typeof(bool))
+                        {
+                            invokeParams[paramIndex] = bool.Parse(args[argIndex++]);
+                        }
+                        else if (p.ParameterType == typeof(uint))
+                        {
+                            invokeParams[paramIndex] = TryParseUint(args[argIndex++]);
+                        }
+                        else if (p.ParameterType == typeof(ushort))
+                        {
+                            invokeParams[paramIndex] = TryParseUshort(args[argIndex++]);
+                        }
+                        else if (p.ParameterType == typeof(string))
+                        {
+                            invokeParams[paramIndex] = args[argIndex++];
+                        }
+                        else if (p.ParameterType == typeof(char))
+                        {
+                            invokeParams[paramIndex] = (char)args[argIndex++][0];
+                        }
+                        else if (p.ParameterType == typeof(float))
+                        {
+                            invokeParams[paramIndex] = float.Parse(args[argIndex++]);
+                        }
+                        else
+                        {
+                            throw new ArgumentException(String.Format("Unhandled type for parameter {0}, type {1}", paramIndex, p.ParameterType));
+                        }
                     }
                 }
             }
@@ -362,7 +363,7 @@ namespace Contralto.Scripting
             // If we've made it THIS far, then we were able to parse all the commands into what they should be.
             // Invoke the method on the object instance associated with the command.
             //
-            return (CommandResult)method.Method.Invoke(method.Instance, invokeParams);        
+            return method.Method.Invoke(method.Instance, invokeParams) as CommandResult?;
         }
 
         enum ParseState
@@ -451,7 +452,7 @@ namespace Contralto.Scripting
             return args;
         }
 
-        private DebuggerCommand GetDebuggerCommandFromCommandString(string command, out string[] args)
+        private DebuggerCommand? GetDebuggerCommandFromCommandString(string command, out string[]? args)
         {
             args = null;
 
@@ -477,7 +478,7 @@ namespace Contralto.Scripting
                 }
 
                 // Otherwise we continue down the tree.
-                DebuggerCommand next = current.FindSubNodeByName(cmdArgs[commandIndex]);
+                DebuggerCommand? next = current.FindSubNodeByName(cmdArgs[commandIndex]);
                 
                 commandIndex++;
 
@@ -606,11 +607,12 @@ namespace Contralto.Scripting
             }
 
             return result;
-        }       
+        }
 
         /// <summary>
         /// Builds the debugger command tree.
         /// </summary>
+        [MemberNotNull(nameof(_commandList), nameof(_commandRoot))]
         private void BuildCommandTree(List<object> commandObjects)
         {
             // Build the flat list which will be built into the tree, by walking
@@ -649,6 +651,11 @@ namespace Contralto.Scripting
 
             foreach (DebuggerCommand c in _commandList)
             {
+                if (string.IsNullOrEmpty(c.Name))
+                {
+                    continue;
+                }
+
                 string[] commandWords = c.Name.Split(' ');
 
                 // This is kind of ugly, we know that at this point every command built above have only

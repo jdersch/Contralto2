@@ -48,10 +48,10 @@ namespace Contralto.Scripting
 
         public void End()
         {
-            _scriptWriter.Close();
+            _scriptWriter?.Close();
             _scriptWriter = null;
         }
 
-        private StreamWriter _scriptWriter;
+        private StreamWriter? _scriptWriter;
     }
 }

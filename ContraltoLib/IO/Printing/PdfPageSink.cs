@@ -20,9 +20,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-using iTextSharp.text;
-using iTextSharp.text.pdf;
+using iText.Kernel.Pdf;
 using Contralto.Logging;
+using iText.Layout;
+using iText.Kernel.Geom;
+using iText.Layout.Element;
+using iText.IO.Image;
+using iText.Layout.Properties;
 
 namespace Contralto.IO.Printing
 {
@@ -46,19 +50,16 @@ namespace Contralto.IO.Printing
 
             try
             {
-                // Start a new document.
-                // All output to a Dover printer is letter-sized.
-                _pdf = new Document(PageSize.LETTER);
-
-                string path = Path.Combine(
+                string path = System.IO.Path.Combine(
                     _configuration.PrintOutputPath,
                     String.Format("AltoDocument-{0}.pdf", DateTime.Now.ToString("yyyyMMdd-hhmmss")));
 
-                PdfWriter writer = PdfWriter.GetInstance(
-                    _pdf,
-                    new FileStream(path, FileMode.Create));
+                // Start a new document.
+                
+                PdfDocument doc = new PdfDocument(new PdfWriter(path));
 
-                _pdf.Open();
+                // All output to a Dover printer is letter-sized.
+                _pdf = new Document(doc, PageSize.LETTER);
 
                 // Let the Orbit deal with the margins.
                 _pdf.SetMargins(0, 0, 0, 0);
@@ -79,11 +80,13 @@ namespace Contralto.IO.Printing
         {
             if (_pdf != null)
             {
-                Image pageImage = iTextSharp.text.Image.GetInstance(height, width, 1 /* greyscale */, 1 /* 1bpp */, rasters);
-                pageImage.SetDpi(375, 375);
-                pageImage.SetAbsolutePosition(_configuration.PageRasterOffsetX, _configuration.PageRasterOffsetY);
-                pageImage.RotationDegrees = 90;
-                pageImage.ScaleToFit(_pdf.PageSize);
+                ImageData pageImageData = ImageDataFactory.Create(height, width, 1 /* greyscale */, 1 /* 1bpp */, rasters, null);
+                Image pageImage = new Image(pageImageData);
+                pageImage.SetFixedPosition(_configuration.PageRasterOffsetX, _configuration.PageRasterOffsetY);
+                pageImage.SetRotationAngle(90.0 * (Math.PI / 180.0));
+                
+                Rectangle pageRect = _pdf.GetPageEffectiveArea(PageSize.LETTER);
+                pageImage.ScaleToFit(pageRect.GetHeight(), pageRect.GetWidth());
 
                 _pageImages.Add(pageImage);
             }
@@ -103,7 +106,7 @@ namespace Contralto.IO.Printing
                     for (int i = 0; i < _pageImages.Count; i++)
                     {
                         _pdf.Add(_pageImages[reversePageOrder ? (_pageImages.Count - 1) - i : i]);
-                        _pdf.NewPage();
+                        _pdf.Add(new AreaBreak(i < _pageImages.Count - 1 ? AreaBreakType.NEXT_PAGE : AreaBreakType.LAST_PAGE));
                     }
 
                     _pdf.Close();

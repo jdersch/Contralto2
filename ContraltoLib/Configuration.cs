@@ -86,11 +86,9 @@ namespace Contralto
 
     public class StartupOptions
     {
-        public static string ConfigurationFile;
-
-        public static string ScriptFile;
-
-        public static string RomPath;
+        public static string ConfigurationFile = String.Empty;
+        public static string ScriptFile = String.Empty;
+        public static string RomPath = String.Empty;
     }
 
     /// <summary>
@@ -132,6 +130,11 @@ namespace Contralto
             DisplayScale = 1;
             SlowPhosphorSimulation = true;
             ThrottleSpeed = true;
+
+            AudioDACCapturePath = String.Empty;
+            PrintOutputPath = String.Empty;
+            TridentImages = new StringCollection();
+            
         }
 
         public Configuration(Configuration config)
@@ -161,13 +164,10 @@ namespace Contralto
             SystemType = config.SystemType;
             ThrottleSpeed = config.ThrottleSpeed;
 
-            if (TridentImages != null)
+            TridentImages = new StringCollection();
+            foreach (string? imageName in config.TridentImages)
             {
-                TridentImages = new StringCollection();
-                foreach (string imageName in config.TridentImages)
-                {
-                    TridentImages.Add(imageName);
-                }
+                TridentImages.Add(imageName);
             }
         }
 
@@ -235,12 +235,12 @@ namespace Contralto
         /// <summary>
         /// The currently loaded image for Drive 0
         /// </summary>
-        public string Drive0Image;
+        public string? Drive0Image;
 
         /// <summary>
         /// The currently loaded image for Drive 1
         /// </summary>
-        public string Drive1Image;
+        public string? Drive1Image;
 
         /// <summary>
         /// The currently loaded images for the Trident controller.
@@ -399,7 +399,7 @@ namespace Contralto
         /// </summary>
         public void ReadConfiguration()
         {
-            string configFilePath = null;
+            string? configFilePath = null;
 
             if (!string.IsNullOrWhiteSpace(StartupOptions.ConfigurationFile))
             {
@@ -432,7 +432,7 @@ namespace Contralto
                 while (!configStream.EndOfStream)
                 {
                     lineNumber++;
-                    string line = configStream.ReadLine().Trim();
+                    string? line = configStream.ReadLine()?.Trim();
 
                     if (string.IsNullOrEmpty(line))
                     {
@@ -592,7 +592,13 @@ namespace Contralto
             {
                 while (!sr.EndOfStream)
                 {
-                    configLines.Add(sr.ReadLine());
+                    string? line = sr.ReadLine();
+
+                    // This can never actually be null, this is here to make static nullability checks happy.
+                    if (line != null)
+                    {
+                        configLines.Add(line);
+                    }
                 }
             }
 
@@ -607,37 +613,37 @@ namespace Contralto
                 int paramLine = configLines.FindIndex(s => s.StartsWith(field.Name, StringComparison.OrdinalIgnoreCase));
 
                 // Apply special formatting for integer types (write out as octal)
-                string outputValue = null;
+                string? outputValue = null;
                 switch (field.FieldType.Name)
                 {
                     case "Int32":
                         {
-                            outputValue = Convert.ToString((Int32)field.GetValue(this), 8);
+                            outputValue = Convert.ToString((Int32)field.GetValue(this)!, 8);
                         }
                         break;
 
                     case "UInt16":
                         {
-                            outputValue = Convert.ToString((UInt16)field.GetValue(this), 8);
+                            outputValue = Convert.ToString((UInt16)field.GetValue(this)!, 8);
                         }
                         break;
 
                     case "Byte":
                         {
-                            outputValue = Convert.ToString((byte)field.GetValue(this), 8);
+                            outputValue = Convert.ToString((byte)field.GetValue(this)!, 8);
                         }
                         break;
 
                     case "StringCollection":
                         {
                             // value is expected to be a comma-delimited set.
-                            StringCollection strings = (StringCollection)(field.GetValue(this));
+                            StringCollection? strings = field.GetValue(this) as StringCollection;
                             if (strings == null)
                             {
                                 break;
                             }
 
-                            foreach (string s in strings)
+                            foreach (string? s in strings)
                             {
                                 if (outputValue == null)
                                 {

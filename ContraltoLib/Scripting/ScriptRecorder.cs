@@ -130,8 +130,6 @@ namespace Contralto.Scripting
             }
         }
 
-        private bool _enabled;
-
         private AltoSystem _system;
         private ulong _lastTimestamp;
         private bool _firstTime;

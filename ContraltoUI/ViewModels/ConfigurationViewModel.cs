@@ -93,7 +93,7 @@ namespace ContraltoUI.ViewModels
 
         }
 
-        public string ContraltoVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        public string? ContraltoVersion => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 
         public IEnumerable<string> NetworkDevices
         {
@@ -170,15 +170,6 @@ namespace ContraltoUI.ViewModels
             }
         }
 
-        public IEnumerable<string> AvailableHostPacketInterfaces
-        {
-            get
-            {
-                // TODO: enumerate interfaces using whatever cross-platform network lib we decide upon
-                return null;
-            }
-        }
-
         public bool ThrottleSpeed
         {
             get { return _newConfiguration.ThrottleSpeed; }
@@ -186,6 +177,16 @@ namespace ContraltoUI.ViewModels
             {
                 _newConfiguration.ThrottleSpeed = value;
                 OnPropertyChanged(nameof(ThrottleSpeed));
+            }
+        }
+
+        public bool PauseWhenNotActive
+        {
+            get { return _newConfiguration.PauseWhenNotActive; }
+            set
+            {
+                _newConfiguration.PauseWhenNotActive = value;
+                OnPropertyChanged(nameof(PauseWhenNotActive));
             }
         }
 
@@ -371,7 +372,7 @@ namespace ContraltoUI.ViewModels
             return String.Format("{0} - {1}", Conversion.ToOctal(FileNumber), Description);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return base.Equals(obj);
         }
