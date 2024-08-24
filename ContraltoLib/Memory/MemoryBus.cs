@@ -22,6 +22,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using Contralto.CPU;
 using Contralto.Logging;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Contralto.Memory
@@ -46,7 +47,7 @@ namespace Contralto.Memory
             _systemType = configuration.SystemType;
 
             Reset();
-        }       
+        }
 
         public void AddDevice(IMemoryMappedDevice dev)
         {
@@ -82,10 +83,10 @@ namespace Contralto.Memory
             _memoryCycle = 0;
             _memoryAddress = 0;
             _memoryDataLow = 0;
-            _memoryDataHigh = 0;            
+            _memoryDataHigh = 0;
             _firstWord = false;
             _memoryOperationActive = false;
-            _extendedMemoryReference = false;            
+            _extendedMemoryReference = false;
         }
 
         public ushort MAR
@@ -291,7 +292,7 @@ namespace Contralto.Memory
                     case 1:
                     case 2:
 
-                        // TODO: good microcode should never do this
+                        // Good microcode should never do this
                         throw new InvalidOperationException("Unexpected microcode behavior -- ReadMD too soon after start of memory cycle.");
                     case 3:
                     case 4:
@@ -327,7 +328,7 @@ namespace Contralto.Memory
                 {
                     case 1:
                     case 2:
-                        // TODO: good microcode should never do this
+                        // Good microcode should never do this
                         throw new InvalidOperationException("Unexpected microcode behavior -- ReadMD too soon after start of memory cycle.");
                     case 3:
                     case 4:
@@ -387,7 +388,7 @@ namespace Contralto.Memory
                 else
                 {
                     LoadMDAltoII(data);
-                }                
+                }
             }
             else
             {
@@ -410,7 +411,7 @@ namespace Contralto.Memory
                 case 1:
                 case 2:
                 case 3:
-                case 4:                
+                case 4:
                     // Good microcode should never do this
                     throw new InvalidOperationException("Unexpected microcode behavior -- LoadMD during incorrect memory cycle.");
 
@@ -498,15 +499,15 @@ namespace Contralto.Memory
                 // Memory-mapped device access:
                 // Look up address in hash; if populated ask the device
                 // to return a value otherwise return 0.
-                IMemoryMappedDevice memoryMappedDevice = null;
+                IMemoryMappedDevice? memoryMappedDevice;
                 if (_bus.TryGetValue(address, out memoryMappedDevice))
                 {
                     return memoryMappedDevice.Read(address, task, extendedMemoryReference);
-                }    
+                }
                 else
-                {                    
+                {
                     return 0;
-                }           
+                }
             }
         }
 
@@ -529,11 +530,11 @@ namespace Contralto.Memory
                 // Memory-mapped device access:
                 // Look up address in hash; if populated ask the device
                 // to store a value otherwise do nothing.
-                IMemoryMappedDevice memoryMappedDevice = null;
+                IMemoryMappedDevice? memoryMappedDevice;
                 if (_bus.TryGetValue(address, out memoryMappedDevice))
                 {                    
                     memoryMappedDevice.Load(address, data, task, extendedMemoryReference);
-                }            
+                }
             }
         }
 
@@ -543,7 +544,7 @@ namespace Contralto.Memory
         private Dictionary<ushort, IMemoryMappedDevice> _bus;
 
         /// <summary>
-        /// Cache the system type since we rely on it        
+        /// Cache the system type since we rely on it
         /// </summary>
         private SystemType _systemType;
 
@@ -551,7 +552,7 @@ namespace Contralto.Memory
         // Optimzation: keep reference to main memory; since 99.9999% of accesses go directly there,
         // we can avoid the hashtable overhead using a simple address check.
         //
-        private Memory _mainMemory;
+        private Memory _mainMemory = null!;
 
         private bool _memoryOperationActive;
         private int _memoryCycle;

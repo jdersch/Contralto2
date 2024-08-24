@@ -86,7 +86,7 @@ namespace Contralto.Logging
             _logText = new List<string>();
         }
 
-        public static event EventHandler Updated;
+        public static event EventHandler? Updated;
 
         public static LogComponent LogComponents
         {
@@ -121,12 +121,11 @@ namespace Contralto.Logging
             {
                 //
                 // My log has something to tell you...
-                // TODO: color based on type, etc.
                 string format = $"{_logText.Count}: {component.ToString()} : {message}";
                 string output = String.Format(format, args);
                 _logText.Add(output);
 
-                Updated(output, new EventArgs());
+                Updated?.Invoke(output, new EventArgs());
             }
         }
 #else
@@ -144,7 +143,6 @@ namespace Contralto.Logging
 
         private static LogComponent _components;
         private static LogType _type;
-        private static long _logIndex;
         private static List<string> _logText;
     }
 }

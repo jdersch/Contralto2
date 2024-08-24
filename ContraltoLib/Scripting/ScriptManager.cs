@@ -39,7 +39,7 @@ namespace Contralto.Scripting
         /// <summary>
         /// Fired when playback of a script has completed or is stopped.
         /// </summary>
-        public static event EventHandler PlaybackCompleted;
+        public static event EventHandler? PlaybackCompleted;
 
         public static void StartRecording(AltoSystem system, string scriptPath)
         {
@@ -64,7 +64,7 @@ namespace Contralto.Scripting
         {
             if (IsRecording)
             {
-                _scriptRecorder.End();
+                _scriptRecorder?.End();
                 _scriptRecorder = null;
             }
 
@@ -90,10 +90,10 @@ namespace Contralto.Scripting
         {
             if (IsPlaying)
             {
-                _scriptPlayback.Stop();
+                _scriptPlayback?.Stop();
                 _scriptPlayback = null;
 
-                PlaybackCompleted(null, null);
+                PlaybackCompleted?.Invoke(null, null!);
             }
 
             Log.Write(LogComponent.Scripting, "Stopped playback.");
@@ -103,18 +103,18 @@ namespace Contralto.Scripting
         {
             if (IsPlaying)
             {
-                _scriptPlayback.Start();
+                _scriptPlayback?.Start();
 
                 Log.Write(LogComponent.Scripting, "Playback resumed after Wait.");
             }
         }
 
-        public static ScriptRecorder Recorder
+        public static ScriptRecorder? Recorder
         {
-            get { return _scriptRecorder;  }
+            get { return _scriptRecorder; }
         }
 
-        public static ScriptPlayback Playback
+        public static ScriptPlayback? Playback
         {
             get { return _scriptPlayback; }
         }
@@ -129,14 +129,14 @@ namespace Contralto.Scripting
             get { return _scriptPlayback != null; }
         }
 
-        private static void OnPlaybackCompleted(object sender, EventArgs e)
+        private static void OnPlaybackCompleted(object? sender, EventArgs e)
         {
             _scriptPlayback = null;
-            PlaybackCompleted(null, null);
+            PlaybackCompleted?.Invoke(null, null!);
         }
 
-        private static ScriptRecorder _scriptRecorder;
-        private static ScriptPlayback _scriptPlayback;
+        private static ScriptRecorder? _scriptRecorder;
+        private static ScriptPlayback? _scriptPlayback;
 
         private static Scheduler _scheduler;
     }

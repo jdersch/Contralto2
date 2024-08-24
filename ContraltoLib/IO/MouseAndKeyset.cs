@@ -23,6 +23,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using Contralto.CPU;
 using Contralto.Memory;
 using Contralto.Scripting;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Contralto.IO
 {
@@ -58,10 +59,11 @@ namespace Contralto.IO
         public MouseAndKeyset(AltoSystem system)
         {
             _system = system;
-            _lock = new ReaderWriterLockSlim();            
+            _lock = new ReaderWriterLockSlim();
             Reset();
         }
 
+        [MemberNotNull(nameof(_moves))]
         public void Reset()
         {
             _keyset = 0;
@@ -92,7 +94,7 @@ namespace Contralto.IO
 
                 if (ScriptManager.IsRecording)
                 {
-                    ScriptManager.Recorder.MouseMoveRelative(dx, dy);
+                    ScriptManager.Recorder?.MouseMoveRelative(dx, dy);
                 }
 
             _lock.ExitWriteLock();
@@ -111,8 +113,7 @@ namespace Contralto.IO
 
                 if (ScriptManager.IsRecording)
                 {
-                    // TODO: verify that this behaves correctly.
-                    ScriptManager.Recorder.MouseMoveAbsolute(x, y);
+                    ScriptManager.Recorder?.MouseMoveAbsolute(x, y);
                 }
 
             _lock.ExitWriteLock();
@@ -124,15 +125,7 @@ namespace Contralto.IO
 
             if (ScriptManager.IsRecording)
             {
-                //
-                // Record the absolute position of the mouse (as held in MOUSELOC in system memory).
-                // All other mouse movements in the script will be recorded relative to this point.
-                //
-                //int x = _system.Memory.Read(0x114, CPU.TaskType.Ethernet, false);
-                //int y = _system.Memory.Read(0x115, CPU.TaskType.Ethernet, false);
-                //ScriptManager.Recorder.MouseMoveAbsolute(x, y);
-
-                ScriptManager.Recorder.MouseDown(button);
+                ScriptManager.Recorder?.MouseDown(button);
             }
         }
 
@@ -142,7 +135,7 @@ namespace Contralto.IO
 
             if (ScriptManager.IsRecording)
             {
-                ScriptManager.Recorder.MouseUp(button);
+                ScriptManager.Recorder?.MouseUp(button);
             }
         }
 
@@ -321,7 +314,7 @@ namespace Contralto.IO
         /// Where the mouse is moving to every time PollMouseBits is called.
         /// </summary> 
         private Queue<MouseMovement> _moves;
-        private MouseMovement _currentMove;
+        private MouseMovement? _currentMove;
         private bool _currentDirection;
 
         private class MouseMovement

@@ -58,7 +58,7 @@ namespace Contralto.IO
     {
         public DoverROS(AltoSystem system)
         {
-            _system = system;            
+            _system = system;
             _printEngineEvent = new Event(0, null, PrintEngineCallback);
 
             Reset();
@@ -77,6 +77,16 @@ namespace Contralto.IO
             _motorSpeed = 0;
             _lineSyncDelay = 0;
             _pageSyncDelay = 0;
+
+            _bufferUnderflow = false;
+            _compareError = false;
+            _lineNoise = false;
+            _local = false;
+            _selectLeadEdge = false;
+            _statusBeamOn = false;
+            _switch3 = false;
+            _switch4 = false;
+            _videoPolarity = false;
 
             _packetsOK = true;
 
@@ -477,7 +487,7 @@ namespace Contralto.IO
         /// <param name="timestampNsec"></param>
         /// <param name="delta"></param>
         /// <param name="context"></param>
-        private void PrintEngineCallback(ulong delta, object context)
+        private void PrintEngineCallback(ulong delta, object? context)
         {
             Log.Write(LogComponent.DoverROS, "Scanline {0} (sendvideo {1})", _printEngineTimestep, _sendVideo);
             switch (_state)
@@ -838,8 +848,7 @@ namespace Contralto.IO
         private ulong _printEngineTimestepInterval = (ulong)((1000.0 / 3500.0) * Conversion.MsecToNsec);
 
         private byte[] _pageData = new byte[3500 * 512];
-        private int _rasterNum;
 
-        private IPageSink _pageOutput;
+        private IPageSink _pageOutput = null!;
     }
 }

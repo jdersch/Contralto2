@@ -21,6 +21,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using Contralto.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Contralto.Scripting
 {
@@ -31,9 +32,9 @@ namespace Contralto.Scripting
             _scriptReader = new StreamReader(scriptPath);
         }
 
-        public ScriptAction ReadNext()
+        public ScriptAction? ReadNext()
         {
-            if (_scriptReader == null)
+            if (_scriptReader == null || _scriptReader.EndOfStream)
             {
                 return null;
             }
@@ -44,16 +45,17 @@ namespace Contralto.Scripting
             //
             while (true)
             {
-                if (_scriptReader.EndOfStream)
+                // The below null check should not be necessary; _scriptReader will never be null.
+                // But try convincing C#'s static analyzer of this...
+                if (_scriptReader == null || _scriptReader.EndOfStream)
                 {
                     // End of the stream, return null to indicate this,
                     // and close the stream.
-                    _scriptReader.Close();
-                    _scriptReader = null;
+                    _scriptReader?.Close();
                     return null;
                 }
 
-                string line = _scriptReader.ReadLine().Trim();
+                string? line = _scriptReader?.ReadLine()?.Trim();
 
                 // Skip empty or comment lines.
                 if (string.IsNullOrWhiteSpace(line) ||
@@ -69,14 +71,13 @@ namespace Contralto.Scripting
                 catch(Exception e)
                 {
                     Log.Write(LogComponent.Scripting, "Invalid script; error: {0}.", e.Message);
-                    _scriptReader.Close();
-                    _scriptReader = null;
+                    _scriptReader?.Close();
                     return null;
                 }
             }
         }
 
-        private StreamReader _scriptReader;
+        private readonly StreamReader _scriptReader;
 
     }
 }

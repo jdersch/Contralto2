@@ -45,6 +45,15 @@ public abstract class ViewModelBase : ObservableObject
     /// </summary>
     /// <param name="viewModel"></param>
     /// <returns></returns>
-    public static Window? FindWindowByViewModel(INotifyPropertyChanged viewModel) =>
-        Windows.FirstOrDefault(x => ReferenceEquals(viewModel, x.DataContext));
+    public static Window FindWindowByViewModel(INotifyPropertyChanged viewModel)
+    {
+        Window? window = Windows.FirstOrDefault(x => ReferenceEquals(viewModel, x.DataContext));
+
+        if (window == null)
+        {
+            throw new InvalidOperationException("No parent window found.");
+        }
+
+        return window;
+    }
 }

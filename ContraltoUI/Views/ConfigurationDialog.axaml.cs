@@ -42,7 +42,7 @@ namespace ContraltoUI.Views
         {
             // This is probably an MVVM abstraction violation.  I have no idea how to accomplish this in a way that's
             // more clean, however.
-            ConfigurationViewModel vm = DataContext as ConfigurationViewModel;
+            ConfigurationViewModel? vm = DataContext as ConfigurationViewModel;
             vm?.CommitChanges();
             Close();
         }

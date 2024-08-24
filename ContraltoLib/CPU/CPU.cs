@@ -20,6 +20,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 using Contralto.Logging;
@@ -49,8 +50,9 @@ namespace Contralto.CPU
         public AltoCPU(AltoSystem system)
         {
             _system = system;
-            _uCodeMemory = new UCodeMemory(system);
+
             _controlROM = new ControlROM(system.Configuration);
+            _uCodeMemory = new UCodeMemory(system, _controlROM);
 
             _tasks[(int)TaskType.Emulator] = new EmulatorTask(this);
             _tasks[(int)TaskType.DiskSector] = new DiskTask(this, true);
@@ -65,6 +67,10 @@ namespace Contralto.CPU
             _tasks[(int)TaskType.Orbit] = new OrbitTask(this);
             _tasks[(int)TaskType.TridentInput] = new TridentTask(this, true);
             _tasks[(int)TaskType.TridentOutput] = new TridentTask(this, false);
+
+            _currentTask = _nextTask = null!;
+
+            Reset();
         }
 
         public Task[] Tasks
@@ -122,7 +128,7 @@ namespace Contralto.CPU
             get { return _aluC0; }
         }
 
-
+        [MemberNotNull(nameof(_r), nameof(_s))]
         public void Reset()
         {
             _uCodeMemory.Reset();
@@ -137,9 +143,9 @@ namespace Contralto.CPU
 
             _t = 0;
             _l = 0;
-            _m = 0;            
-            _ir = 0;            
-            _aluC0 = 0;            
+            _m = 0;
+            _ir = 0;
+            _aluC0 = 0;
             _rmr = 0xffff;      // Start all tasks in ROM0
 
             // Reset tasks.
@@ -152,10 +158,8 @@ namespace Contralto.CPU
             }
 
             // Execute the initial task switch.
-            _currentTask = null;
             TaskSwitch();
-
-            _currentTask = _nextTask;            
+            _currentTask = _nextTask;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -304,15 +308,7 @@ namespace Contralto.CPU
             {
                 if (_tasks[i] != null && _tasks[i].Wakeup)
                 {                    
-                    _nextTask = _tasks[i];                    
-
-                    /*
-                    if (_nextTask != _currentTask && _currentTask != null)
-                    {                        
-                        Log.Write(LogComponent.TaskSwitch, "TASK: Next task will be {0} (pri {1}); current task {2} (pri {3})",
-                        (TaskType)_nextTask.Priority, _nextTask.Priority,
-                        (TaskType)_currentTask.Priority, _currentTask.Priority);                        
-                    } */
+                    _nextTask = _tasks[i];
                     break;
                 }
             }
@@ -325,18 +321,18 @@ namespace Contralto.CPU
         // AltoCPU registers
         private ushort _t;
         private ushort _l;
-        private ushort _m;        
+        private ushort _m;
         private ushort _ir;
         
         // R and S register files and bank select
         private ushort[] _r;
-        private ushort[][] _s;        
+        private ushort[][] _s;
 
         // Stores the last carry from the ALU on a Load L
         private ushort _aluC0;
 
         // RMR (Reset Mode Register)
-        ushort _rmr;        
+        ushort _rmr;
 
         // Task data
         private Task _nextTask;         // The task to switch two after the next microinstruction

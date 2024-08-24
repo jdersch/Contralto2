@@ -30,13 +30,18 @@ namespace ContraltoUI.Converters
 {
     public class BoolToWindowStateConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
+            if (value == null)
+            {
+                return false;
+            }
+
             WindowState? val = (bool)value ? WindowState.FullScreen : WindowState.Normal;
             return val;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
         }

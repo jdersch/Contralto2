@@ -36,6 +36,8 @@ namespace Contralto.IO
     {
         public UDPEncapsulation(string interfaceName)
         {
+            _shutdown = false;
+
             // Try to set up UDP client.
             try
             {
@@ -50,7 +52,7 @@ namespace Contralto.IO
                 //
                 NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
 
-                IPInterfaceProperties props = null;
+                IPInterfaceProperties? props = null;
                 foreach(NetworkInterface nic in nics)
                 {
                     if (nic.Name == interfaceName)
@@ -94,13 +96,13 @@ namespace Contralto.IO
                     "Error was '{0}'.",
                     e.Message);
 
-                _udpClient = null;
+                _udpClient = null!;
             }
         }        
 
         public void RegisterReceiveCallback(ReceivePacketDelegate callback)
         {   
-            // UDP connection could not be configured, can't receive anything.                     
+            // UDP connection could not be configured, can't receive anything.
             if (_udpClient == null)
             {
                 return;
@@ -113,16 +115,16 @@ namespace Contralto.IO
 
         public void Shutdown()
         {
-            // Shut down the reciever thread.
-
-            if (_receiveThread != null)
-            {
-                _receiveThread.Abort();
-            }
-
             if (_udpClient != null)
             {
                 _udpClient.Close();
+            }
+
+            // Shut down the reciever thread.
+            _shutdown = true;
+            if (_receiveThread != null)
+            {
+                _receiveThread.Join();
             }
         }
 
@@ -192,8 +194,8 @@ namespace Contralto.IO
             
             IPEndPoint groupEndPoint = new IPEndPoint(IPAddress.Any, _udpPort);            
 
-            while (true)
-            {                
+            while (!_shutdown)
+            {
                 byte[] data = _udpClient.Receive(ref groupEndPoint);
                 
                 //
@@ -203,13 +205,13 @@ namespace Contralto.IO
                 {
                     Log.Write(LogType.Verbose, LogComponent.HostNetworkInterface, "Invalid packet: Packet is fewer than 2 words long, dropping.");
                     continue;
-                }                
+                }
 
                 // Drop our own UDP packets.
                 if (!groupEndPoint.Address.Equals(_thisIPAddress))
                 {
                     Log.Write(LogComponent.HostNetworkInterface, "Received UDP-encapsulated 3mbit packet.");
-                    _callback(new System.IO.MemoryStream(data));
+                    _callback?.Invoke(new System.IO.MemoryStream(data));
                 }
             }
         }
@@ -230,17 +232,18 @@ namespace Contralto.IO
         } 
 
         // Callback delegate for received data.
-        private ReceivePacketDelegate _callback;
+        private ReceivePacketDelegate? _callback;
 
         // Thread used for receive
-        private Thread _receiveThread;
+        private Thread? _receiveThread;
+        private bool _shutdown;
 
         // UDP port (TODO: make configurable?)
         private const int _udpPort = 42424;
         private UdpClient _udpClient;
-        private IPEndPoint _broadcastEndpoint;
+        private IPEndPoint? _broadcastEndpoint;
 
         // The IP address (unicast address) of the interface we're using to send UDP datagrams.
-        private IPAddress _thisIPAddress;
+        private IPAddress? _thisIPAddress;
     }   
 }

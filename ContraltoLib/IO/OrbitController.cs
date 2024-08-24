@@ -21,6 +21,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using Contralto.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Contralto.IO
 {
@@ -35,9 +36,9 @@ namespace Contralto.IO
         {
             _system = system;
             _ros = new DoverROS(system);
-            _refreshEvent = new Event(_refreshInterval, null, RefreshCallback);           
+            _refreshEvent = new Event(_refreshInterval, null, RefreshCallback);
 
-            Reset();            
+            Reset();
         }
 
         public bool RefreshTimerExpired
@@ -60,6 +61,7 @@ namespace Contralto.IO
             get { return _fa; }
         }
 
+        [MemberNotNull(nameof(_image), nameof(_output))]
         public void Reset()
         {
             //
@@ -83,7 +85,7 @@ namespace Contralto.IO
             _behind = false;
 
             _stableROS = true;
-            _badROS = false;            
+            _badROS = false;
 
             Log.Write(LogComponent.Orbit, "Orbit system reset.");
             UpdateWakeup();
@@ -601,7 +603,7 @@ namespace Contralto.IO
             _image[x, wordAddress] = (ushort)(inputWord | inkBit);
         }
 
-        private void RefreshCallback(ulong skewNsec, object context)
+        private void RefreshCallback(ulong skewNsec, object? context)
         {
             _refresh = true;
 

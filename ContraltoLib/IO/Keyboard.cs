@@ -23,6 +23,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using Contralto.Memory;
 using Contralto.CPU;
 using Contralto.Scripting;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Contralto.IO
 {
@@ -122,6 +123,7 @@ namespace Contralto.IO
             Reset();
         }
 
+        [MemberNotNull(nameof(_keyWords))]
         public void Reset()
         {
             _keyWords = new ushort[4];
@@ -131,7 +133,7 @@ namespace Contralto.IO
         public ushort Read(int address, TaskType task, bool extendedMemoryReference)
         {
             // keyboard word is inverted
-            return (ushort)~_keyWords[address - 0xfe1c];     // TODO: move to constant.
+            return (ushort)~_keyWords[address - _keyboardDataAddress];
         }
 
         public void Load(int address, ushort data, TaskType task, bool extendedMemoryReference)
@@ -153,7 +155,7 @@ namespace Contralto.IO
 
             if (ScriptManager.IsRecording)
             {
-                ScriptManager.Recorder.KeyDown(key);
+                ScriptManager.Recorder?.KeyDown(key);
             }
         }
 
@@ -164,7 +166,7 @@ namespace Contralto.IO
 
             if (ScriptManager.IsRecording)
             {
-                ScriptManager.Recorder.KeyUp(key);
+                ScriptManager.Recorder?.KeyUp(key);
             }
         }
 
@@ -194,9 +196,10 @@ namespace Contralto.IO
 
         private readonly MemoryRange[] _addresses =
         {
-            new MemoryRange(0xfe1c, 0xfe1f), // 177034-177037 
+            new MemoryRange(_keyboardDataAddress, _keyboardDataAddress + 4), // 177034-177037 (octal)
         };
 
+        [MemberNotNull(nameof(_keyMap))]
         private void InitMap()
         {
             _keyMap = new Dictionary<AltoKey, AltoKeyBit>();
@@ -279,6 +282,8 @@ namespace Contralto.IO
             AltoKey.X, AltoKey.O, AltoKey.L, AltoKey.Comma, AltoKey.Quote, AltoKey.RBracket, AltoKey.BlankMiddle, AltoKey.BlankTop
         };       
 
-        private bool _bootKeysPressed;        
+        private bool _bootKeysPressed;
+
+        private const ushort _keyboardDataAddress = 0xfe1c;
     }
 }

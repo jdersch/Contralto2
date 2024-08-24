@@ -29,10 +29,12 @@ namespace Contralto.Scripting
         {
             _commandName = commandName;
             _usage = "<No help available>";
+            _description = "<No description available>";
         }
 
         public DebuggerFunction(string commandName, string description)
         {
+            _usage = "<No help available>";
             _commandName = commandName;
             _description = description;
         }

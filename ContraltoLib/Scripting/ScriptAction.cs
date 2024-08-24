@@ -21,6 +21,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using Contralto.IO;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Contralto.Scripting
@@ -320,7 +321,7 @@ namespace Contralto.Scripting
             ControlCommands controlCommands = new ControlCommands(system);
             CommandExecutor executor = new CommandExecutor(controlCommands);
             
-            CommandResult res = executor.ExecuteCommand(_commandString);
+            CommandResult? res = executor.ExecuteCommand(_commandString);
 
             if (res == CommandResult.Quit ||
                 res == CommandResult.QuitNoSave)
@@ -502,6 +503,7 @@ namespace Contralto.Scripting
 
         }
 
+        [MemberNotNull(nameof(_strokes))]
         private void BuildStrokeList(string text)
         {
             _strokes = new List<Keystroke>();
@@ -570,7 +572,8 @@ namespace Contralto.Scripting
             public AltoKey Key;
         }
 
-        
+
+        [MemberNotNull(nameof(_unmodifiedKeyMap), nameof(_shiftedKeyMap))]
         private static void BuildKeyMap()
         {
             _unmodifiedKeyMap = new Dictionary<char, AltoKey>();

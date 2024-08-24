@@ -374,7 +374,7 @@ namespace Contralto.IO
         {
             _packName = path;
             _geometry = geometry;
-            _sectors = new DiskSector[_geometry.Cylinders, _geometry.Heads, _geometry.Sectors];            
+            _sectors = new DiskSector[_geometry.Cylinders, _geometry.Heads, _geometry.Sectors];
 
             if (load)
             {
@@ -515,10 +515,7 @@ namespace Contralto.IO
 
         public void Dispose()
         {
-            if (_diskStream != null)
-            {
-                _diskStream.Close();
-            }
+            _diskStream.Close();
         }
 
         private FileBackedDiskPack(DiskGeometry geometry, string path, bool load)
@@ -539,7 +536,6 @@ namespace Contralto.IO
                 if (_diskStream.Length != geometry.GetDiskSizeBytes())
                 {
                     _diskStream.Close();
-                    _diskStream = null;
                     throw new InvalidOperationException("Image size is invalid.");
                 }
             }

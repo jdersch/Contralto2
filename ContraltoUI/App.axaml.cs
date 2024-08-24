@@ -40,7 +40,7 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        IClassicDesktopStyleApplicationLifetime desktop = ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+        IClassicDesktopStyleApplicationLifetime? desktop = ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
 
         if (desktop == null)
         {
@@ -74,12 +74,13 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    private void ParseArgs(string[] args)
+    private void ParseArgs(string[]? args)
     {
-        if (args.Length == 0)
+        if (args == null || args.Length == 0)
         {
             return;
         }
+
         for (int i = 0; i < args.Length; i++)
         {
             switch (args[i++].ToLowerInvariant())
@@ -132,5 +133,5 @@ public partial class App : Application
         Console.WriteLine("Usage: ContrAlto [-config <configurationFile>] [-script <scriptFile>]");
     }
 
-    private AltoSystem _system;
+    private AltoSystem _system = null!;
 }

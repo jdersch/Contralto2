@@ -45,20 +45,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <StackPanel>
         <TabControl BorderThickness="1" Margin="5,5,5,5">
             <TabItem Header="Processor">
-                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
-                    <StackPanel>
-                        <TextBlock Margin="5">Processor Configuration:</TextBlock>
-
-                        <RadioButton Margin="5" GroupName="g1"
-                            Content="Alto I, 1K Control ROM, 1K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.AltoI}}"/>
-                        <RadioButton Margin="5" GroupName="g1"
-                            Content="Alto II XM, 1K Control ROM, 1K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.OneKRom}}"/>
-                        <RadioButton Margin="5" GroupName="g1"
-                            Content="Alto II XM, 2K Control ROM, 1K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.TwoKRom}}"/>
-                        <RadioButton Margin="5" GroupName="g1"
-                            Content="Alto II XM, 1K Control ROM, 3K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.ThreeKRam}}"/>
-                    </StackPanel>
-                </Border>
+                <StackPanel>
+                    <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                        <StackPanel>
+                            <TextBlock Margin="5">Processor Configuration:</TextBlock>
+                            <RadioButton Margin="5" GroupName="g1"
+                                Content="Alto I, 1K Control ROM, 1K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.AltoI}}"/>
+                            <RadioButton Margin="5" GroupName="g1"
+                                Content="Alto II XM, 1K Control ROM, 1K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.OneKRom}}"/>
+                            <RadioButton Margin="5" GroupName="g1"
+                                Content="Alto II XM, 2K Control ROM, 1K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.TwoKRom}}"/>
+                            <RadioButton Margin="5" GroupName="g1"
+                                Content="Alto II XM, 1K Control ROM, 3K Control RAM" IsChecked="{Binding SystemType, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static cfg:SystemType.ThreeKRam}}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
+                        <StackPanel>
+                            <TextBlock Margin="5">Execution Options:</TextBlock>
+                            <CheckBox Margin="5" IsChecked="{Binding ThrottleSpeed}">Throttle Framerate at 60 fields/sec</CheckBox>
+                            <CheckBox Margin="5" IsChecked="{Binding PauseWhenNotActive}">Pause when ContrAlto window is not active</CheckBox>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                
             </TabItem>
             <TabItem Header="Ethernet">
                 <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
@@ -83,7 +92,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <TabItem Header="Display">
                 <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
                     <StackPanel>
-                        <CheckBox Margin="5" IsChecked="{Binding ThrottleSpeed}">Throttle Framerate at 60 fields/sec</CheckBox>
                         <CheckBox Margin="5" IsChecked="{Binding SlowPhosphorSimulation}">Simulate Slow Phosphor Persistence</CheckBox>
                         <StackPanel Margin="5" Orientation="Horizontal">
                             <Label VerticalAlignment="Center">Screen Scaling:</Label>

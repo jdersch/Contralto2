@@ -20,6 +20,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 using Contralto.CPU;
@@ -35,7 +36,7 @@ namespace Contralto.Display
     {
         public DisplayController(AltoSystem system)
         {
-            _system = system;            
+            _system = system;
             Reset();
         }
 
@@ -83,9 +84,10 @@ namespace Contralto.Display
             }
         }
 
+        [MemberNotNull(nameof(_verticalBlankScanlineWakeup), nameof(_horizontalWakeup), nameof(_wordWakeup))]
         public void Reset()
         {
-            _evenField = false;           
+            _evenField = false;
             _scanline = 0;
             _word = 0;
             _dwtBlocked = true;
@@ -97,7 +99,7 @@ namespace Contralto.Display
                 CheckWordWakeup();
             }
 
-            _whiteOnBlack = _whiteOnBlackLatch = false;            
+            _whiteOnBlack = _whiteOnBlackLatch = false;
             _lowRes = _lowResLatch = false;
             _swModeLatch = false;
 
@@ -127,7 +129,7 @@ namespace Contralto.Display
 
             // Block DHT, DWT
             _system.CPU.BlockTask(TaskType.DisplayHorizontal);
-            _system.CPU.BlockTask(TaskType.DisplayWord);            
+            _system.CPU.BlockTask(TaskType.DisplayWord);
 
             _fields++;
 
@@ -140,7 +142,7 @@ namespace Contralto.Display
 
             // Schedule wakeup for first scanline of vblank
             _verticalBlankScanlineWakeup.TimestampNsec = _verticalBlankScanlineDuration;
-            _system.Scheduler.Schedule(_verticalBlankScanlineWakeup);            
+            _system.Scheduler.Schedule(_verticalBlankScanlineWakeup);
         }
 
         /// <summary>
@@ -149,9 +151,9 @@ namespace Contralto.Display
         /// <param name="timeNsec"></param>
         /// <param name="skewNsec"></param>
         /// <param name="context"></param>
-        private void VerticalBlankScanlineCallback(ulong skewNsec, object context)
+        private void VerticalBlankScanlineCallback(ulong skewNsec, object? context)
         {
-            // End of VBlank scanline.         
+            // End of VBlank scanline.
             _vblankScanlineCount++;
 
             // Run MRT
@@ -172,14 +174,14 @@ namespace Contralto.Display
                 _dataBuffer.Clear();
 
                 DWTBLOCK = false;
-                DHTBLOCK = false;              
+                DHTBLOCK = false;
 
                 // Run CURT
                 _system.CPU.WakeupTask(TaskType.Cursor);
 
-                // Schedule HBlank wakeup for end of first HBlank            
+                // Schedule HBlank wakeup for end of first HBlank
                 _horizontalWakeup.TimestampNsec = _horizontalBlankDuration - skewNsec;
-                _system.Scheduler.Schedule(_horizontalWakeup);                
+                _system.Scheduler.Schedule(_horizontalWakeup);
             }
             else
             {                
@@ -195,7 +197,7 @@ namespace Contralto.Display
         /// <param name="timeNsec"></param>
         /// <param name="skewNsec"></param>
         /// <param name="context"></param>
-        private void HorizontalBlankEndCallback(ulong skewNsec, object context)
+        private void HorizontalBlankEndCallback(ulong skewNsec, object? context)
         {
             // Reset scanline word counter
             _word = 0;
@@ -226,7 +228,7 @@ namespace Contralto.Display
         /// <param name="timeNsec"></param>
         /// <param name="skewNsec"></param>
         /// <param name="context"></param>
-        private void WordCallback(ulong skewNsec, object context)
+        private void WordCallback(ulong skewNsec, object? context)
         {
             if (_display == null)
             {
@@ -274,19 +276,19 @@ namespace Contralto.Display
                 }
                 else
                 {
-                    // More scanlines to do.      
-                                                     
+                    // More scanlines to do.
+
                     // Run CURT and MRT at end of scanline
                     _system.CPU.WakeupTask(TaskType.Cursor);
                     _system.CPU.WakeupTask(TaskType.MemoryRefresh);
 
-                    // Schedule HBlank wakeup for end of next HBlank                    
+                    // Schedule HBlank wakeup for end of next HBlank
                     _horizontalWakeup.TimestampNsec = _horizontalBlankDuration - skewNsec;
                     _system.Scheduler.Schedule(_horizontalWakeup);
                     DWTBLOCK = false;
                     _dataBuffer.Clear();
 
-                    // Deal with SWMODE latches for the scanline we're about to draw                    
+                    // Deal with SWMODE latches for the scanline we're about to draw
                     if (_swModeLatch)
                     {
                         _lowRes = _lowResLatch;
@@ -433,7 +435,7 @@ namespace Contralto.Display
         private Queue<ushort> _dataBuffer = new Queue<ushort>(16);
 
         private AltoSystem _system;
-        private IAltoDisplay _display;
+        private IAltoDisplay? _display;
 
         private int _fields;
 

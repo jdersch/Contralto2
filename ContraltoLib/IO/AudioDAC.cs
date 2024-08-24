@@ -107,7 +107,7 @@ namespace Contralto.IO
             new MemoryRange(0xfffe, 0xfffe),
         };
 
-        private IAudioSink _audioSink;
+        private IAudioSink? _audioSink;
     }
 
 }

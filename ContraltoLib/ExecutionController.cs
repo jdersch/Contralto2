@@ -121,19 +121,19 @@ namespace Contralto
             get { return (_execThread != null && _execThread.IsAlive); }
         }
         
-        public StepCallbackDelegate StepCallback
+        public StepCallbackDelegate? StepCallback
         {
             get { return _stepCallback; }
             set { _stepCallback = value; }
         }
 
-        public ErrorCallbackDelegate ErrorCallback
+        public ErrorCallbackDelegate? ErrorCallback
         {
             get { return _errorCallback; }
             set { _errorCallback = value; }
         }
 
-        public ShutdownCallbackDelegate ShutdownCallback
+        public ShutdownCallbackDelegate? ShutdownCallback
         {
             get { return _shutdownCallback; }
             set { _shutdownCallback = value; }
@@ -203,13 +203,13 @@ namespace Contralto
         }
 
         // Execution thread and state
-        private Thread _execThread;        
+        private Thread? _execThread;
         private bool _execAbort;
         private bool _userAbort;
 
-        private StepCallbackDelegate _stepCallback;
-        private ErrorCallbackDelegate _errorCallback;
-        private ShutdownCallbackDelegate _shutdownCallback;
+        private StepCallbackDelegate? _stepCallback;
+        private ErrorCallbackDelegate? _errorCallback;
+        private ShutdownCallbackDelegate? _shutdownCallback;
 
         private AltoSystem _system;
     }

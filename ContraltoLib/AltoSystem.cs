@@ -85,7 +85,7 @@ namespace Contralto
                 }
                 catch (Exception e)
                 {
-                    Log.Write(LogType.Warning, LogComponent.DiskController, "Could not load image '{0}' for Diablo drive 1.  Error '{1}'.", Configuration.Drive0Image, e.Message);
+                    Log.Write(LogType.Warning, LogComponent.DiskController, "Could not load image '{0}' for Diablo drive 1.  Error '{1}'.", Configuration.Drive1Image, e.Message);
                     UnloadDiabloDrive(1);
                 }
             }
@@ -95,18 +95,22 @@ namespace Contralto
             {
                 for (int i = 0; i < Math.Min(8, Configuration.TridentImages.Count); i++)
                 {
+                    if (String.IsNullOrWhiteSpace(Configuration.TridentImages[i]))
+                    {
+                        continue;
+                    }
+
                     try
                     {
-                        if (!String.IsNullOrWhiteSpace(Configuration.TridentImages[i]))
-                        {
-                            LoadTridentDrive(i, Configuration.TridentImages[i], false);
-                        }
+                        // Null-forgiving operator below to get around poor static analysis
+                        LoadTridentDrive(i, Configuration.TridentImages[i]!, false);
                     }
                     catch (Exception e)
                     {
-                        Log.Write(LogType.Warning, LogComponent.DiskController, "Could not load image '{0}' for Trident drive {1}.  Error '{2}'.", Configuration.TridentImages[i], i, e.Message);
+                        Log.Write(LogType.Warning, LogComponent.DiskController, "Could not load image '{0}' for Trident drive {1}.  Error '{2}'.", Configuration.TridentImages[i]!, i, e.Message);
                         UnloadTridentDrive(i);
                     }
+                    
                 }
             }
 
@@ -132,7 +136,7 @@ namespace Contralto
 
             if (ScriptManager.IsRecording)
             {
-                ScriptManager.Recorder.Command("reset");
+                ScriptManager.Recorder?.Command("reset");
             }
         }
 
@@ -209,7 +213,7 @@ namespace Contralto
             //
             if (ScriptManager.IsRecording)
             {
-                ScriptManager.Recorder.Command(commitDisks ? "quit" : "quit without saving");
+                ScriptManager.Recorder?.Command(commitDisks ? "quit" : "quit without saving");
                 ScriptManager.StopRecording();
             }
 
@@ -271,7 +275,7 @@ namespace Contralto
 
                 if (ScriptManager.IsRecording)
                 {
-                    ScriptManager.Recorder.Command(String.Format("new disk {0} {1}", drive, path));
+                    ScriptManager.Recorder?.Command(String.Format("new disk {0} {1}", drive, path));
                 }
             }
             else
@@ -280,11 +284,11 @@ namespace Contralto
 
                 if (ScriptManager.IsRecording)
                 {
-                    ScriptManager.Recorder.Command(String.Format("load disk {0} {1}", drive, path));
+                    ScriptManager.Recorder?.Command(String.Format("load disk {0} {1}", drive, path));
                 }
             }
 
-            _diskController.Drives[drive].LoadPack(newPack);            
+            _diskController.Drives[drive].LoadPack(newPack);
         }
 
         public void UnloadDiabloDrive(int drive)
@@ -303,7 +307,7 @@ namespace Contralto
 
             if (ScriptManager.IsRecording)
             {
-                ScriptManager.Recorder.Command(String.Format("unload disk {0}", drive));
+                ScriptManager.Recorder?.Command(String.Format("unload disk {0}", drive));
             }
         }
 
@@ -348,7 +352,7 @@ namespace Contralto
 
                 if (ScriptManager.IsRecording)
                 {
-                    ScriptManager.Recorder.Command(String.Format("new trident {0} {1}", drive, path));
+                    ScriptManager.Recorder?.Command(String.Format("new trident {0} {1}", drive, path));
                 }
             }
             else
@@ -357,7 +361,7 @@ namespace Contralto
 
                 if (ScriptManager.IsRecording)
                 {
-                    ScriptManager.Recorder.Command(String.Format("load trident {0} {1}", drive, path));
+                    ScriptManager.Recorder?.Command(String.Format("load trident {0} {1}", drive, path));
                 }
             }
 
@@ -380,7 +384,7 @@ namespace Contralto
 
             if (ScriptManager.IsRecording)
             {
-                ScriptManager.Recorder.Command(String.Format("unload trident {0}", drive));
+                ScriptManager.Recorder?.Command(String.Format("unload trident {0}", drive));
             }
         }
 

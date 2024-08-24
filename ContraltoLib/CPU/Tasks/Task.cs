@@ -490,7 +490,7 @@ namespace Contralto.CPU
                 // Load T
                 if (instruction.LoadT)
                 {
-                    // Does this operation change the source for T?                    
+                    // Does this operation change the source for T?
                     _cpu._t = instruction.LoadTFromALU ? aluData : _busData;
 
                     //
@@ -518,7 +518,7 @@ namespace Contralto.CPU
 
                 //
                 // Execute special functions that happen late in the cycle
-                //                
+                //
                 ExecuteSpecialFunction2Late(instruction);
 
                 //
@@ -529,7 +529,7 @@ namespace Contralto.CPU
                 if (swMode)
                 {
                     //Log.Write(LogType.Verbose, LogComponent.Microcode, "SWMODE: uPC {0}, next uPC {1} (NEXT is {2})", Conversion.ToOctal(_mpc), Conversion.ToOctal(instruction.NEXT | nextModifier), Conversion.ToOctal(instruction.NEXT));
-                    _cpu.UCodeMemory.SwitchMode((ushort)(instruction.NEXT | nextModifier), _taskType);                    
+                    _cpu.UCodeMemory.SwitchMode((ushort)(instruction.NEXT | nextModifier), _taskType);
                 }
 
                 //
@@ -669,11 +669,9 @@ namespace Contralto.CPU
             // Per uInstruction Task Data:
             // Modified by both the base Task implementation and any subclasses
             //
-            // TODO: maybe instead of these being shared (which feels kinda bad)
-            // these could be encapsulated in an object and passed to subclass implementations?            
             protected ushort _busData;          // Data placed onto the bus (ANDed from multiple sources)
             protected ushort _nextModifier;     // Bits ORed onto the NEXT field of the current instruction
-            protected uint _rSelect;            // RSELECT field from current instruction, potentially modified by task            
+            protected uint _rSelect;            // RSELECT field from current instruction, potentially modified by task
             protected bool _loadS;              // Whether to load S from M at and of cycle
             protected bool _loadR;              // Whether to load R from shifter at end of cycle.
             protected bool _rdRam;              // Whether to load uCode RAM onto the bus during the next cycle.

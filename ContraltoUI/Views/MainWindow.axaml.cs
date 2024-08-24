@@ -21,6 +21,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using ContraltoUI.ViewModels;
 
 namespace ContraltoUI.Views;
@@ -43,6 +45,23 @@ public partial class MainWindow : Window
         }
     }
 
+    protected override void OnLostFocus(RoutedEventArgs e)
+    {
+        if (DataContext is AltoUIViewModel vm)
+        {
+            vm.OnLostFocus();
+        }
+        base.OnLostFocus(e);
+    }
 
-    
+    protected override void OnGotFocus(GotFocusEventArgs e)
+    {
+        if (DataContext is AltoUIViewModel vm)
+        {
+            vm.OnFocused();
+        }
+        base.OnGotFocus(e);
+    }
+
+
 }

@@ -39,6 +39,8 @@ using ContraltoUI.Views;
 using System.Threading;
 using Contralto.Scripting;
 using Avalonia.Controls;
+using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ContraltoUI.ViewModels;
 
@@ -48,7 +50,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
     {
         _hostDesktopDisplayScale = 1.25;
         double compensatedDpi = 96.0 / _hostDesktopDisplayScale;
-        _displayBitmap0 = _currentBitmap = new WriteableBitmap(
+        _displayBitmap0 = _displayBitmap = _currentBitmap = new WriteableBitmap(
             new PixelSize(ALTO_DISPLAY_BITMAP_WIDTH, ALTO_DISPLAY_HEIGHT),
             new Vector(compensatedDpi, compensatedDpi),     // DPI
             PixelFormat.Bgra8888,
@@ -686,7 +688,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             DataContext = vm
         };
 
-        await configurationDialog.ShowDialog(FindWindowByViewModel(this));
+        await InvokeDialogModal(configurationDialog);
 
         // Invalidate display properties that may have been affected by the config change
         OnPropertyChanged(nameof(CompensatedWidth));
@@ -709,7 +711,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             DataContext = vm
         };
 
-        await bootDialog.ShowDialog(FindWindowByViewModel(this));
+        await InvokeDialogModal(bootDialog);
     }
 
     public ICommand ShowDebuggerWindow { get; }
@@ -727,7 +729,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             DataContext = vm
         };
 
-        debuggerWindow.Show(FindWindowByViewModel(this));
+        InvokeDialog(debuggerWindow);
     }
 
     public ICommand ShowAboutDialog { get; }
@@ -745,9 +747,27 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             DataContext = vm
         };
 
-        await aboutDialog.ShowDialog(FindWindowByViewModel(this));
+        await InvokeDialogModal(aboutDialog);
     }
 
+    // Window focus handling
+    public void OnLostFocus()
+    {
+        if (_system.Configuration.PauseWhenNotActive)
+        {
+            _system.Controller.StopExecution();
+            _lostFocusPaused = true;
+        }
+    }
+
+    public void OnFocused()
+    {
+        if (!_system.Controller.IsRunning && _lostFocusPaused)
+        {
+            _system.Controller.StartExecution(AlternateBootType.None);
+            _lostFocusPaused = false;
+        }
+    }
 
     // KB/Mouse stuff
     public void OnKeyDown(KeyEventArgs e)
@@ -1012,7 +1032,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
         }
     }
 
-
+    [MemberNotNull(nameof(_keyMap), nameof(_keysetMap))]
     private void InitKeymap()
     {
         _keyMap = new Dictionary<Key, AltoKey>();
@@ -1098,6 +1118,17 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
         OnPropertyChanged(nameof(FieldsPerSecond));
     }
 
+    private void InvokeDialog(Window dialog)
+    {
+        Window parent = FindWindowByViewModel(this);
+        dialog.Show(parent);
+    }
+
+    private async Task InvokeDialogModal(Window dialog)
+    {
+        Window parent = FindWindowByViewModel(this);
+        await dialog.ShowDialog(parent);
+    }
 
     // Alto System managed by the UI
     private AltoSystem _system;
@@ -1118,6 +1149,9 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     // Display bits
     private bool _fullScreenDisplay;
+
+    // Focus bit for auto pause/unpause
+    private bool _lostFocusPaused;
 
     //
     // Buffer for display pixels.  This is 1bpp, directly written by the Alto.

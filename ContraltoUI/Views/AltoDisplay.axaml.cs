@@ -23,7 +23,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using ContraltoUI.ViewModels;
+using Org.BouncyCastle.Crypto.Agreement;
 
 namespace ContraltoUI.Views;
 
@@ -35,20 +38,28 @@ public partial class AltoDisplay : UserControl
 
         // TODO: maybe make this a single pixel or something to make it visible if the Alto is displaying
         // no cursor at all?
-        _hiddenCursor = new Cursor(StandardCursorType.None);
+        Bitmap cursorBitmap = new Bitmap(AssetLoader.Open(new System.Uri("avares://ContraltoUI/Assets/DisplayCursor.png")));
+        _hiddenCursor = new Cursor(cursorBitmap, new PixelPoint(2,2));
+    }
+
+    protected override void OnInitialized()
+    {
+        // Hack: Do this here because just setting 'Cursor="None"' in the XAML only randomly works.
+        Cursor = _hiddenCursor;
+        base.OnInitialized();
     }
 
     // There may be some maaaagical databinding way I can do the below, I just don't care right now.
     protected override void OnKeyDown(KeyEventArgs e)
     {
-        AltoUIViewModel alto = (AltoUIViewModel)DataContext;
-        alto.OnKeyDown(e);
+        AltoUIViewModel? alto = DataContext as AltoUIViewModel;
+        alto?.OnKeyDown(e);
     }
 
     protected override void OnKeyUp(KeyEventArgs e)
     {
-        AltoUIViewModel alto = (AltoUIViewModel)DataContext;
-        alto.OnKeyUp(e);
+        AltoUIViewModel? alto = DataContext as AltoUIViewModel;
+        alto?.OnKeyUp(e);
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
@@ -56,25 +67,22 @@ public partial class AltoDisplay : UserControl
         // Send mouse coordinate normalized to the image's (DPI-compensated) render size.
         Point pointerPoint = e.GetPosition(DisplayImage);
 
-        AltoUIViewModel alto = (AltoUIViewModel)DataContext;
-        alto.OnMouseMoved(pointerPoint.X / (DisplayImage.DesiredSize.Width / alto.HostDesktopDisplayScale), pointerPoint.Y / (DisplayImage.DesiredSize.Height / alto.HostDesktopDisplayScale));
-
-        // Hack: Do this here because just setting 'Cursor="None"' in the XAML only randomly works.
-        this.Cursor = _hiddenCursor;
+        AltoUIViewModel? alto = DataContext as AltoUIViewModel;
+        alto?.OnMouseMoved(pointerPoint.X / (DisplayImage.DesiredSize.Width / alto.HostDesktopDisplayScale), pointerPoint.Y / (DisplayImage.DesiredSize.Height / alto.HostDesktopDisplayScale));
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
-        AltoUIViewModel alto = (AltoUIViewModel)DataContext;
+        AltoUIViewModel? alto = DataContext as AltoUIViewModel;
         PointerPointProperties pointerPoint = e.GetCurrentPoint(this).Properties;
-        alto.OnMouseDown(pointerPoint.IsLeftButtonPressed, pointerPoint.IsMiddleButtonPressed, pointerPoint.IsRightButtonPressed);
+        alto?.OnMouseDown(pointerPoint.IsLeftButtonPressed, pointerPoint.IsMiddleButtonPressed, pointerPoint.IsRightButtonPressed);
     }
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
-        AltoUIViewModel alto = (AltoUIViewModel)DataContext;
+        AltoUIViewModel? alto = DataContext as AltoUIViewModel;
         // this Avalonia API is weirdly asymmetrical.
-        alto.OnMouseUp(e.InitialPressMouseButton == MouseButton.Left, e.InitialPressMouseButton == MouseButton.Middle, e.InitialPressMouseButton == MouseButton.Right);
+        alto?.OnMouseUp(e.InitialPressMouseButton == MouseButton.Left, e.InitialPressMouseButton == MouseButton.Middle, e.InitialPressMouseButton == MouseButton.Right);
     }
 
     private Cursor _hiddenCursor;
