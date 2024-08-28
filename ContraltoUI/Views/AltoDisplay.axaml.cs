@@ -43,20 +43,6 @@ public partial class AltoDisplay : UserControl
         _hiddenCursor = new Cursor(cursorBitmap, new PixelPoint(2,2));
     }
 
-    protected override void OnGotFocus(GotFocusEventArgs e)
-    {
-        // Use the tiny "hidden" cursor when focuseed.
-        Cursor = _hiddenCursor;
-        base.OnGotFocus(e);
-    }
-
-    protected override void OnLostFocus(RoutedEventArgs e)
-    {
-        // Use the normal arrow pointer when the window doesn't have focus.
-        Cursor = new Cursor(StandardCursorType.Arrow);
-        base.OnLostFocus(e);
-    }
-
     // There may be some maaaagical databinding way I can do the below, I just don't care right now.
     protected override void OnKeyDown(KeyEventArgs e)
     {
