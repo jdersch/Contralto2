@@ -27,7 +27,6 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using ContraltoUI.ViewModels;
-using Org.BouncyCastle.Crypto.Agreement;
 
 namespace ContraltoUI.Views;
 
@@ -36,11 +35,22 @@ public partial class AltoDisplay : UserControl
     public AltoDisplay()
     {
         InitializeComponent();
-
-        // TODO: maybe make this a single pixel or something to make it visible if the Alto is displaying
-        // no cursor at all?
         Bitmap cursorBitmap = new Bitmap(AssetLoader.Open(new System.Uri("avares://ContraltoUI/Assets/DisplayCursor.png")));
-        _hiddenCursor = new Cursor(cursorBitmap, new PixelPoint(2,2));
+        _hiddenCursor = new Cursor(cursorBitmap, new PixelPoint(2, 2));
+    }
+
+    protected override void OnGotFocus(GotFocusEventArgs e)
+    {
+        // Show the "hidden" cursor only when the window has focus...
+        Cursor = _hiddenCursor;
+        base.OnGotFocus(e);
+    }
+
+    protected override void OnLostFocus(RoutedEventArgs e)
+    {
+        // ... otherwise use the default arrow cursor.
+        Cursor = new Cursor(StandardCursorType.Arrow);
+        base.OnLostFocus(e);
     }
 
     // There may be some maaaagical databinding way I can do the below, I just don't care right now.
