@@ -196,7 +196,7 @@ namespace Contralto.IO
 
         private readonly MemoryRange[] _addresses =
         {
-            new MemoryRange(_keyboardDataAddress, _keyboardDataAddress + 4), // 177034-177037 (octal)
+            new MemoryRange(_keyboardDataAddress, _keyboardDataAddress + 3), // 177034-177037 (octal)
         };
 
         [MemberNotNull(nameof(_keyMap))]

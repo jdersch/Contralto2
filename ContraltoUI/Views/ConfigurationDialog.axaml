@@ -104,6 +104,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
                     <StackPanel>
                         <CheckBox Margin="5" IsChecked="{Binding EnableAudioDAC}">Enable Audio DAC (Used by Smalltalk Music System)</CheckBox>
+                        <!--
                         <CheckBox Margin="5" IsEnabled="{Binding EnableAudioDAC}" IsChecked="{Binding EnableAudioDACCapture}">Enable DAC output capture</CheckBox>
                         <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Padding="5" Margin="5">
                             <StackPanel Orientation="Horizontal" Margin="5" IsEnabled="{Binding EnableAudioDACCapture}">
@@ -112,6 +113,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                 <Button Margin="5" Command="{Binding BrowseForDACOutput}">Browse...</Button>
                             </StackPanel>
                         </Border>
+                        -->
                     </StackPanel>
                 </Border>
             </TabItem>

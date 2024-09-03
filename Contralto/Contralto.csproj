@@ -13,6 +13,7 @@
     <FileVersion>2.0.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Disks\animation.dsk" />
     <None Remove="Disks\bcpl.dsk" />
     <None Remove="Disks\bravox54.dsk" />
     <None Remove="Disks\diag.dsk" />
@@ -70,6 +71,12 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Disks\animation.dsk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

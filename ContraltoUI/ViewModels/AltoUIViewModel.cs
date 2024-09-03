@@ -49,6 +49,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
     public AltoUIViewModel(AltoSystem system)
     {
         HostDesktopDisplayScale = 1.0;
+        _fullScreenScaleFactor = 1.0;
 
         _frameTimer = new HighResolutionTimer(16.6666666f);
 
@@ -88,7 +89,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
         // Force fullscreen display in Kiosk mode
         if (_system.Configuration.KioskMode)
         {
-            _fullScreenDisplay = true;
+            FullScreenDisplay = true;
         }
 
         // Render the initial bitmap to force it to have a size when databound
@@ -111,12 +112,16 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
     // The below properties are used to work around desktop high-DPI scaling so that
     // Alto display pixels map directly to host display pixels without fractional scaling --
     // as far as I can tell there's no way to ask Avalonia to simply display a bitmap without
-    // scaling applied.
+    // DPI compensation applied.
     // This way we can apply our own integer-scaling to the display to make it look nice and
     // crisp without bilinear filtering, etc.
     public double HostDesktopDisplayScale
     {
-        get { return _hostDesktopDisplayScale; }
+        get 
+        {
+            return _hostDesktopDisplayScale;
+        }
+
         set
         {
             if (_hostDesktopDisplayScale == value)
@@ -145,8 +150,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
         }
     }
 
-    public double CompensatedWidth => ((double)ALTO_DISPLAY_BITMAP_WIDTH / _hostDesktopDisplayScale) * _system.Configuration.DisplayScale;
-    public double CompensatedHeight => ((double)ALTO_DISPLAY_HEIGHT / _hostDesktopDisplayScale) * _system.Configuration.DisplayScale;
+    public double CompensatedWidth => 
+        ((double)ALTO_DISPLAY_BITMAP_WIDTH / _hostDesktopDisplayScale) * GetDisplayScaleFactor();
+
+    public double CompensatedHeight => 
+        ((double)ALTO_DISPLAY_HEIGHT / _hostDesktopDisplayScale) * GetDisplayScaleFactor();
 
     public bool IsSystemRunning => _system.Controller.IsRunning;
 
@@ -160,7 +168,45 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     public bool CanPlayScript => !ScriptManager.IsRecording && !ScriptManager.IsPlaying;
 
-    public bool FullScreenDisplay => _fullScreenDisplay;
+    public bool FullScreenDisplay
+    {
+        get { return _fullScreenDisplay; }
+        set
+        {
+            if (value == _fullScreenDisplay)
+            {
+                return;
+            }
+            _fullScreenDisplay = value;
+
+            if (_fullScreenDisplay)
+            {
+                // In fullscreen mode we will attempt to fit the display as well as possible within the
+                // available screen real-estate:
+                PixelRect displayRect = FindWindowByViewModel(this).Screens.Primary.Bounds;
+
+                // Select scale based on aspect ratio of screen.
+                double displayScale = 1.0;
+                if (displayRect.Width < displayRect.Height)
+                {
+                    displayScale = (double)displayRect.Width / (double)ALTO_DISPLAY_WIDTH;
+                }
+                else
+                {
+                    displayScale = (double)displayRect.Height / (double)ALTO_DISPLAY_HEIGHT;
+                }
+
+                // For now, integer-only scaling:
+                _fullScreenScaleFactor = (int)displayScale;
+            }
+
+            OnPropertyChanged(nameof(FullScreenDisplay));
+            OnPropertyChanged(nameof(WindowState));
+            OnPropertyChanged(nameof(CompensatedWidth));
+            OnPropertyChanged(nameof(CompensatedHeight));
+
+        }
+    }
 
     public WindowState WindowState => _fullScreenDisplay ? WindowState.FullScreen : WindowState.Normal;
 
@@ -432,10 +478,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             return;
         }
 
-        _fullScreenDisplay = !_fullScreenDisplay;
-
-        OnPropertyChanged(nameof(WindowState));
-        OnPropertyChanged(nameof(FullScreenDisplay));
+        FullScreenDisplay = !FullScreenDisplay;
     }
 
     public ICommand LoadDiabloDrive { get; }
@@ -456,7 +499,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             {
                 new("Diablo Disks")
                 {
-                    Patterns = new[] { "*.dsk;*.dsk44" },
+                    Patterns = new[] { "*.dsk", "*.dsk44" },
                 },
                 new("Diablo 30") 
                 { 
@@ -530,7 +573,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             {
                 new("Diablo Disks")
                 {
-                    Patterns = new[] { "*.dsk;*.dsk44" },
+                    Patterns = new[] { "*.dsk", "*.dsk44" },
                 },
                 new("Diablo 30")
                 {
@@ -589,7 +632,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             {
                 new("Trident Disks")
                 {
-                    Patterns = new[] { "*.dsk80;*.dsk300" },
+                    Patterns = new[] { "*.dsk80", "*.dsk300" },
                 },
                 new("Trident T80")
                 {
@@ -647,7 +690,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             {
                 new("Trident Disks")
                 {
-                    Patterns = new[] { "*.dsk80;*.dsk300" },
+                    Patterns = new[] { "*.dsk80", "*.dsk300" },
                 },
                 new("Trident T80")
                 {
@@ -1136,6 +1179,11 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
         await dialog.ShowDialog(parent);
     }
 
+    private double GetDisplayScaleFactor()
+    {
+        return _fullScreenDisplay ? _fullScreenScaleFactor : _system.Configuration.DisplayScale;
+    }
+
     // Alto System managed by the UI
     private AltoSystem _system;
 
@@ -1155,6 +1203,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     // Display bits
     private bool _fullScreenDisplay;
+    private double _fullScreenScaleFactor;
 
     // Focus bit for auto pause/unpause
     private bool _lostFocusPaused;

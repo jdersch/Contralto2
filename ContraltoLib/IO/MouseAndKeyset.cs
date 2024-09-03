@@ -308,7 +308,7 @@ namespace Contralto.IO
 
         // Used to control the rate of mouse movement data
         //
-        public int _pollCounter;        
+        public int _pollCounter;
 
         /// <summary>
         /// Where the mouse is moving to every time PollMouseBits is called.
@@ -359,10 +359,10 @@ namespace Contralto.IO
                 // movement occurred in 1/60th of a second; PollMouseBits is invoked (via <-MOUSE)
                 // by the MRT approximately every 1/13000th of a second.
                 // This is all approximate and not expected to be completely accurate.
-                //                
+                //
                 double distance = Math.Sqrt(Math.Pow(XSteps, 2) + Math.Pow(YSteps, 2));
 
-                PollRate = (int)((13000.0 / 120.0) / (distance + 1));
+                PollRate = (int)((13000.0 / 60.0) / (distance + 1));
 
                 if (PollRate == 0)
                 {

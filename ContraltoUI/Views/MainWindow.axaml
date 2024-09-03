@@ -242,7 +242,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <MenuItem Header="Restart with Alternate Boot" Command="{Binding StartSystemWithAltBoot}" IsEnabled="{Binding IsSystemRunning}" IsVisible="{Binding IsSystemRunning}" HotKey="Ctrl+Alt+A"/>
                 <MenuItem Header="Alternate Boot Options..." Command="{Binding ShowAlternateBootDialog}"/>
                 <MenuItem Header="System Configuration..." Command="{Binding ShowSystemConfigurationDialog}" HotKey="Ctrl+Alt+C"/>
+                <!-- 
                 <MenuItem Header="Show Debugger..." Command="{Binding ShowDebugger}" HotKey="Ctrl+Alt+D"/>
+                -->
                 <MenuItem Header="Full Screen Display" Command="{Binding ToggleFullScreen}" HotKey="Ctrl+Alt+F"/>
             </MenuItem>
             <MenuItem Header="_Help">
