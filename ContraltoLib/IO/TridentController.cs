@@ -55,7 +55,9 @@ namespace Contralto.IO
         public TridentController(AltoSystem system)
         {
             _system = system;
-            _drives = new TridentDrive[8];
+            // We initialize 16 drives even though only 8 are normally available;
+            // this is to make Spruce happy.  This needs to be investigated.
+            _drives = new TridentDrive[16];
 
             for(int i=0;i<_drives.Length;i++)
             {
