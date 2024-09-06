@@ -324,7 +324,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             //
             _system.Controller.StopExecution();
             ScriptManager.StartPlayback(_system, files.First().Path.AbsolutePath);
-            _system.Controller.StartExecution(AlternateBootType.None);
+            _system.Controller.StartExecution();
         }
         else
         {
@@ -375,7 +375,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
         if (wasRunning)
         {
-            _system.Controller.StartExecution(AlternateBootType.None);
+            _system.Controller.StartExecution();
         }
     }
 
@@ -430,7 +430,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
 
     private void OnStartSystem()
     {
-        _system.Controller.StartExecution(AlternateBootType.None);
+        _system.Controller.StartExecution();
         OnPropertyChanged(nameof(IsSystemRunning));
         OnPropertyChanged(nameof(ExecutionStatus));
     }
@@ -813,7 +813,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
     {
         if (!_system.Controller.IsRunning && _lostFocusPaused)
         {
-            _system.Controller.StartExecution(AlternateBootType.None);
+            _system.Controller.StartExecution();
             _lostFocusPaused = false;
         }
     }

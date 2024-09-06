@@ -30,7 +30,7 @@ namespace Contralto.IO
 {    
     /// <summary>
     /// Implements the logic for encapsulating a 3mbit ethernet packet into/out of UDP datagrams.
-    /// Sent packets are broadcast to the subnet.        
+    /// Sent packets are broadcast to the subnet.
     /// </summary>
     public class UDPEncapsulation : IPacketEncapsulation
     {
@@ -98,7 +98,7 @@ namespace Contralto.IO
 
                 _udpClient = null!;
             }
-        }        
+        }
 
         public void RegisterReceiveCallback(ReceivePacketDelegate callback)
         {   
@@ -150,7 +150,7 @@ namespace Contralto.IO
 
             //
             // Outgoing packet contains 1 extra word (2 bytes) containing
-            // the prepended packet length (one word)            
+            // the prepended packet length (one word)
             byte[] packetBytes = new byte[length * 2 + 2];
 
             //
@@ -175,7 +175,7 @@ namespace Contralto.IO
                 Conversion.ToOctal(packetBytes[2]),
                 length);
 
-            _udpClient.Send(packetBytes, packetBytes.Length, _broadcastEndpoint);            
+            _udpClient.Send(packetBytes, packetBytes.Length, _broadcastEndpoint);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace Contralto.IO
         {
             Log.Write(LogComponent.HostNetworkInterface, "UDP Receiver thread started.");
             
-            IPEndPoint groupEndPoint = new IPEndPoint(IPAddress.Any, _udpPort);            
+            IPEndPoint groupEndPoint = new IPEndPoint(IPAddress.Any, _udpPort);
 
             while (!_shutdown)
             {

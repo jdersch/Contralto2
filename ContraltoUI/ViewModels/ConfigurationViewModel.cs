@@ -22,12 +22,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using Avalonia.Data;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using Contralto;
 using ReactiveUI;
 using SharpPcap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Windows.Input;
 
@@ -95,23 +97,11 @@ namespace ContraltoUI.ViewModels
 
         public string? ContraltoVersion => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 
-        public IEnumerable<string> NetworkDevices
-        {
-            get
-            {
-                return CaptureDeviceList.Instance.Select(d => d.Description);
-            }
-        }
-
         public bool RestartRequired
         {
             get
             {
-                // TODO: how many of these can we eliminate
-                return (HostPacketInterfaceName != _system.Configuration.HostPacketInterfaceName ||
-                        HostPacketInterfaceType != _system.Configuration.HostPacketInterfaceType) ||
-                        _newConfiguration.HostAddress != _system.Configuration.HostAddress ||
-                        SystemType != _system.Configuration.SystemType;
+                return SystemType != _system.Configuration.SystemType;
             }
         }
 
@@ -128,7 +118,7 @@ namespace ContraltoUI.ViewModels
 
         public string HostAddress
         {
-            get { return Conversion.ToOctal(_newConfiguration.BootAddress); }
+            get { return Conversion.ToOctal(_newConfiguration.HostAddress); }
             set
             {
                 try
@@ -154,8 +144,20 @@ namespace ContraltoUI.ViewModels
             set
             {
                 _newConfiguration.HostPacketInterfaceType = value;
+
+                // Hack to force a proper selection for the new type, something
+                // goes wrong with the databinding when the NetworkDevices list
+                // is changed and Avalonia fails to set HostPacketInterfaceName
+                // to the first available selection.  I assume this is an
+                // Avalonia issue and not me doing something stupid here but...
+                Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    HostPacketInterfaceName = NetworkDevices.FirstOrDefault();
+                });
+
                 OnPropertyChanged(nameof(HostPacketInterfaceType));
-                OnPropertyChanged(nameof(RestartRequired));
+                OnPropertyChanged(nameof(HostPacketInterfaceName));
+                OnPropertyChanged(nameof(NetworkDevices));
             }
         }
 
@@ -166,7 +168,24 @@ namespace ContraltoUI.ViewModels
             {
                 _newConfiguration.HostPacketInterfaceName = value;
                 OnPropertyChanged(nameof(HostPacketInterfaceName));
-                OnPropertyChanged(nameof(RestartRequired));
+            }
+        }
+
+        public IEnumerable<string> NetworkDevices
+        {
+            get
+            {
+                switch (_newConfiguration.HostPacketInterfaceType)
+                {
+                    case PacketInterfaceType.UDPEncapsulation:
+                        return NetworkInterface.GetAllNetworkInterfaces().Select(d => d.Name);
+
+                    case PacketInterfaceType.EthernetEncapsulation:
+                        return CaptureDeviceList.Instance.Select(d => d.Description);
+
+                    default:
+                        return new List<string>();
+                }
             }
         }
 

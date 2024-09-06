@@ -39,33 +39,10 @@ namespace Contralto.IO
 
             _fifoTransmitWakeupEvent = new Event(_fifoTransmitDuration, null, OutputFifoCallback);
 
-            // Attach real Ethernet device if user has specified one, otherwise leave unattached; output data
-            // will go into a bit-bucket.
-            try
-            {
-                switch (_system.Configuration.HostPacketInterfaceType)
-                {
-                    // TODO: need a way to replace these interfaces when configurations change, w/out restarting.
-                    case PacketInterfaceType.UDPEncapsulation:
-                        _hostInterface = new UDPEncapsulation(_system.Configuration.HostPacketInterfaceName);
-                        _hostInterface.RegisterReceiveCallback(OnHostPacketReceived);
-                        break;
-
-                    case PacketInterfaceType.EthernetEncapsulation:
-                        _hostInterface = new HostEthernetEncapsulation(system.Configuration.HostPacketInterfaceName, system.Configuration.HostAddress);
-                        _hostInterface.RegisterReceiveCallback(OnHostPacketReceived);
-                        break;
-
-                    default:
-                        _hostInterface = null;
-                        break;
-                }
-            }
-            catch(Exception e)
-            {
-                _hostInterface = null;
-                Log.Write(LogComponent.HostNetworkInterface, "Unable to configure network interface.  Error {0}", e.Message);
-            }
+            AttachHostInterface(
+                system.Configuration.HostPacketInterfaceType, 
+                system.Configuration.HostPacketInterfaceName, 
+                system.Configuration.HostAddress);
 
             // More words than the Alto will ever send.
             _outputData = new ushort[4096];
@@ -85,6 +62,43 @@ namespace Contralto.IO
             _outputIndex = 0;
 
             ResetInterface();
+        }
+
+        public void AttachHostInterface(PacketInterfaceType type, string name, byte hostAddress)
+        {
+            if (_hostInterface != null)
+            {
+                _hostInterface.Shutdown();
+                _hostInterface = null;
+            }
+
+            // Attach real Ethernet device if user has specified one, otherwise leave unattached; output data
+            // will go into a bit-bucket.
+            try
+            {
+                switch (type)
+                {
+                    // TODO: need a way to replace these interfaces when configurations change, w/out restarting.
+                    case PacketInterfaceType.UDPEncapsulation:
+                        _hostInterface = new UDPEncapsulation(name);
+                        _hostInterface.RegisterReceiveCallback(OnHostPacketReceived);
+                        break;
+
+                    case PacketInterfaceType.EthernetEncapsulation:
+                        _hostInterface = new HostEthernetEncapsulation(name, hostAddress);
+                        _hostInterface.RegisterReceiveCallback(OnHostPacketReceived);
+                        break;
+
+                    default:
+                        _hostInterface = null;
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                _hostInterface = null;
+                Log.Write(LogComponent.HostNetworkInterface, "Unable to configure network interface.  Error {0}", e.Message);
+            }
         }
 
         public byte Address

@@ -142,7 +142,35 @@ namespace Contralto
 
         public Configuration Configuration {
             get { return _configuration; }
-            set { _configuration = value; }
+            set 
+            {
+                // Check for specific configuration changes that need to be propagated to components.
+                // TODO: would be nice to have a generic mechanism for this.
+                bool ethernetConfigurationChanged =
+                    value.HostPacketInterfaceName != _configuration.HostPacketInterfaceName ||
+                    value.HostPacketInterfaceType != _configuration.HostPacketInterfaceType ||
+                    value.HostAddress != _configuration.HostAddress;
+                
+                _configuration = value;
+
+                if (ethernetConfigurationChanged)
+                {
+                    // Pause execution while swapping out host interfaces to ensure no one's
+                    // touching the old interface while we do so.
+                    bool wasRunning = _controller.IsRunning;
+                    _controller.StopExecution();
+
+                    _ethernetController.AttachHostInterface(
+                        _configuration.HostPacketInterfaceType, 
+                        _configuration.HostPacketInterfaceName,
+                        _configuration.HostAddress);
+
+                    if (wasRunning)
+                    {
+                        _controller.StartExecution();
+                    }
+                }
+            }
         }
 
         public ExecutionController Controller
@@ -167,10 +195,7 @@ namespace Contralto
         public void Shutdown(bool commitDisks)
         {
             // Kill any host interface threads that are running.
-            if (_ethernetController.HostInterface != null)
-            {
-                _ethernetController.HostInterface.Shutdown();
-            }
+            _ethernetController.HostInterface?.Shutdown();
 
             //
             // Ensure audio cleans up before exit.

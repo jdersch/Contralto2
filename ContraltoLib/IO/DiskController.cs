@@ -89,7 +89,7 @@ namespace Contralto.IO
                 //
                 // Select disk from bit 14 of KDATA.
                 // The HW reference claims that the drive is selected by bit 14 of KDATA XOR'd with bit 15
-                // of KADR but I can find no evidence in the schematics that this is actually so. 
+                // of KADR but I can find no evidence in the schematics that this is actually so.
                 // Page 18 of the controller schematic ("DISK ADDRESSING") shows that the current DATA(14) (KDATA bit 14) 
                 // value is gated into the DISK select lines (running to the drive) whenever a KADR<- F1 is executed.
                 // It is possible that the HW ref is telling the truth but the XORing is done by the Sector Task uCode
@@ -272,9 +272,9 @@ namespace Contralto.IO
 
             // Reset drives
             _drives[0].Reset();
-            _drives[1].Reset();            
+            _drives[1].Reset();
 
-            // Create events to be reused during execution        
+            // Create events to be reused during execution
 
             // Schedule the first sector immediately.
             _sectorEvent = new Event(0, null, SectorCallback);
@@ -394,8 +394,8 @@ namespace Contralto.IO
         {            
             if (_seclateEnable)
             {
-                _seclate = true;                
-                _kStat |= SECLATE;                
+                _seclate = true;
+                _kStat |= SECLATE;
                 Log.Write(LogComponent.DiskSectorTask, "SECLATE for sector {0}.", _sector);
             }
         }
@@ -434,7 +434,7 @@ namespace Contralto.IO
             //
             // "Initiates a disk seek [or restore] operation.  The KDATA register must have been loaded previously,
             // and the SENDADR bit of the KCOMM register previously set to 1."
-            //            
+            //
 
             // sanity check: see if SENDADR bit is set, if not we'll signal an error (since I'm trusting that
             // the official Xerox uCode is doing the right thing, this will help ferret out emulation issues.
@@ -460,7 +460,7 @@ namespace Contralto.IO
         {
             //
             // Set "seek fail" bit based on selected cylinder (if out of bounds) and do not
-            // commence a seek if so.            
+            // commence a seek if so.
             if (!SelectedDrive.IsLoaded || destCylinder > SelectedDrive.Pack?.Geometry.Cylinders - 1)
             {
                 _kStat |= SEEKFAIL;
@@ -520,14 +520,14 @@ namespace Contralto.IO
             // to generate these slices during these periods (and the clock comes from the
             // drive itself when actual data is present).  For our purposes, the two clocks
             // are one and the same.
-            //                                         
+            //
 
             //
             // Pick out the word that just passed under the head.  This may not be
             // actual data (it could be the pre-header delay, inter-record gaps or sync words)
             // and we may not actually end up doing anything with it, but we may
             // need it to decide whether to do anything at all.
-            //                                             
+            //
             DataCell diskWord = SelectedDrive.ReadWord(_sectorWordIndex);
 
             bool bWakeup = false;
@@ -555,7 +555,7 @@ namespace Contralto.IO
                         // Debugging: on a read/check, if we are overwriting a word that was never read by the
                         // microcode via KDATA, log it.
                         if (_debugRead)
-                        {                            
+                        {
                             Log.Write(LogType.Warning, LogComponent.DiskController, "--- missed sector word {0}({1}) ---", _sectorWordIndex, _kDataRead);
                         }
 
@@ -567,7 +567,7 @@ namespace Contralto.IO
                     }
                     else
                     {
-                        // Write                        
+                        // Write
                         Log.Write(LogType.Verbose, LogComponent.DiskController, "Sector {0} Word {1} (rec {2}) to be written with {3} from KDATA", _sector, _sectorWordIndex, _recNo, Conversion.ToOctal(_kDataWrite));
 
                         if (_kDataWriteLatch)
@@ -627,7 +627,7 @@ namespace Contralto.IO
             if (bWakeup)
             {
                 Log.Write(LogType.Verbose, LogComponent.DiskWordTask, "Word task awoken for word {0}.", _sectorWordIndex);
-                _system.CPU.WakeupTask(TaskType.DiskWord);                
+                _system.CPU.WakeupTask(TaskType.DiskWord);
             }
 
             // Last, move to the next word.
@@ -717,7 +717,7 @@ namespace Contralto.IO
         // Transfer bit
         private bool _dataXfer;
 
-        // Current sector        
+        // Current sector
         private int _sector;
 
         //
@@ -740,7 +740,7 @@ namespace Contralto.IO
 
         private bool _syncWordWritten;
 
-        // Sector timing.  Based on table on pg. 43 of the Alto Hardware Manual                                        
+        // Sector timing.  Based on table on pg. 43 of the Alto Hardware Manual
 
         // From altoconsts23.mu:  [all constants in octal, for reference]
         // $MFRRDL		$177757;	DISK HEADER READ DELAY IS 21 WORDS
@@ -750,12 +750,12 @@ namespace Contralto.IO
         // $MRPAL		$177775;	DISK READ POSTAMBLE LENGTH IS 3 WORDS
         // $MWPAL		$177773;	DISK WRITE POSTAMBLE LENGTH IS 5 WORDS          <<-- writing, clearly.
         private static double _scale = 1.0;
-        private static ulong _sectorDuration = (ulong)((40.0 / 12.0) * Conversion.MsecToNsec * _scale);      // time in nsec for one sector            
+        private static ulong _sectorDuration = (ulong)((40.0 / 12.0) * Conversion.MsecToNsec * _scale);      // time in nsec for one sector
         private static ulong _wordDuration = (ulong)((_sectorDuration / (ulong)(DiabloDrive.SectorWordCount)) * _scale);  // time in nsec for one word
         private int _sectorWordIndex;                                                               // current word being read
 
         private Event _sectorEvent;
-        private Event _wordEvent;      
+        private Event _wordEvent;
 
         //
         // SECLATE data.

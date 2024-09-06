@@ -61,6 +61,11 @@ namespace Contralto
             _system.PressBootKeys(bootType);
         }
 
+        public void StartExecution()
+        {
+            StartAltoExecutionThread();
+        }
+
         public void StopExecution()
         {
             _userAbort = true;
@@ -111,7 +116,7 @@ namespace Contralto
 
                 if (running)
                 {
-                    StartExecution(AlternateBootType.None);
+                    StartExecution();
                 }
             }
         }
