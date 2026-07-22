@@ -204,7 +204,7 @@ namespace Contralto
                     // Halt execution
                     break;
                 }
-            }            
+            }
         }
 
         // Execution thread and state

@@ -73,7 +73,7 @@ namespace Contralto
                 catch (Exception e)
                 {
                     Log.Write(LogType.Warning, LogComponent.DiskController, "Could not load image '{0}' for Diablo drive 0.  Error '{1}'.", Configuration.Drive0Image, e.Message);
-                    UnloadDiabloDrive(0);
+                    UnloadDiabloDrive(0, true);
                 }
             }
 
@@ -86,7 +86,7 @@ namespace Contralto
                 catch (Exception e)
                 {
                     Log.Write(LogType.Warning, LogComponent.DiskController, "Could not load image '{0}' for Diablo drive 1.  Error '{1}'.", Configuration.Drive1Image, e.Message);
-                    UnloadDiabloDrive(1);
+                    UnloadDiabloDrive(1, true);
                 }
             }
 
@@ -316,7 +316,7 @@ namespace Contralto
             _diskController.Drives[drive].LoadPack(newPack);
         }
 
-        public void UnloadDiabloDrive(int drive)
+        public void UnloadDiabloDrive(int drive, bool commitChanges)
         {
             if (drive < 0 || drive > 1)
             {
@@ -326,7 +326,10 @@ namespace Contralto
             //
             // Commit the current disk first
             //
-            _diskController.CommitDisk(drive);
+            if (commitChanges)
+            {
+                _diskController.CommitDisk(drive);
+            }
 
             _diskController.Drives[drive].UnloadPack();
 

@@ -475,8 +475,8 @@ namespace Contralto.Scripting
                     system.Keyboard.KeyUp(stroke.Key);
                 }
 
-                // Delay 50ms before the next key
-                _timestamp = 50 * Conversion.MsecToNsec;
+                // Delay 100ms before the next key
+                _timestamp = 100 * Conversion.MsecToNsec;
             }
         }
 

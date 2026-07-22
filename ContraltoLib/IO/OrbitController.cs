@@ -525,6 +525,9 @@ namespace Contralto.IO
             // Return the last value from ROB
             ushort value = _rob;
 
+            // TODO: there's something screwy going on here with the ROB buffer thing;
+            // ignoring it for now; if we don't we end up getting the last data from a scanline
+            // showing up at the start of the next.  I think my implementation here is boooogus.
             // Update ROB
             _rob = _output[_outputX, _outputY];
 

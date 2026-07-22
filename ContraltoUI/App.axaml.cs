@@ -25,6 +25,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Contralto;
+using Contralto.Scripting;
 using ContraltoUI.ViewModels;
 using ContraltoUI.Views;
 using System;
@@ -70,6 +71,11 @@ public partial class App : Application
             DataContext = vm
         };
 
+        if (!String.IsNullOrWhiteSpace(StartupOptions.ScriptFile))
+        {
+            ScriptManager.StartPlayback(_system, StartupOptions.ScriptFile);
+            _system.Controller.StartExecution();
+        }
 
         base.OnFrameworkInitializationCompleted();
     }

@@ -32,8 +32,11 @@ namespace Contralto.CPU
         Invalid = -1,
         Emulator = 0,
         Orbit = 1,
+        Unused2 = 2,
         TridentOutput = 3,
         DiskSector = 4,
+        Unused5 = 5,
+        Unused6 = 6,
         Ethernet = 7,
         MemoryRefresh = 8,
         DisplayWord = 9,
@@ -67,6 +70,10 @@ namespace Contralto.CPU
             _tasks[(int)TaskType.Orbit] = new OrbitTask(this);
             _tasks[(int)TaskType.TridentInput] = new TridentTask(this, true);
             _tasks[(int)TaskType.TridentOutput] = new TridentTask(this, false);
+
+            _tasks[(int)TaskType.Unused2] = new NullTask(this);
+            _tasks[(int)TaskType.Unused5] = new NullTask(this);
+            _tasks[(int)TaskType.Unused6] = new NullTask(this);
 
             _currentTask = _nextTask = null!;
 
@@ -151,10 +158,7 @@ namespace Contralto.CPU
             // Reset tasks.
             for (int i=0;i<_tasks.Length;i++)
             {
-                if (_tasks[i] != null)
-                {
-                    _tasks[i].Reset();
-                }
+                _tasks[i].Reset();
             }
 
             // Execute the initial task switch.
@@ -181,13 +185,13 @@ namespace Contralto.CPU
                     // Invoke the task switch, this will take effect after
                     // the NEXT instruction completes, not this one.
                     TaskSwitch();
-                    break;                
+                    break;
 
                 case InstructionCompletion.MemoryWait:
                     // We were waiting for memory on this cycle, we do nothing
                     // (no task switch even if one is pending) in this case.
                     break;
-            }            
+            }
         }
 
         /// <summary>
@@ -202,10 +206,7 @@ namespace Contralto.CPU
             // Soft-Reset tasks.
             for (int i = 0; i < _tasks.Length; i++)
             {
-                if (_tasks[i] != null)
-                {
-                    _tasks[i].SoftReset();
-                }
+                _tasks[i].SoftReset();
             }
 
             Log.Write(LogComponent.CPU, "Silent Boot; microcode banks initialized to {0}", Conversion.ToOctal(_rmr));
@@ -242,12 +243,9 @@ namespace Contralto.CPU
         /// <param name="task"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WakeupTask(TaskType task)
-        {            
-            if (_tasks[(int)task] != null)
-            {             
-               // Log.Write(LogComponent.TaskSwitch, "Wakeup enabled for Task {0}", task);            
-                _tasks[(int)task].WakeupTask();                
-            }
+        {
+            // Log.Write(LogComponent.TaskSwitch, "Wakeup enabled for Task {0}", task);
+            _tasks[(int)task].WakeupTask();
         }
 
         /// <summary>
@@ -258,23 +256,13 @@ namespace Contralto.CPU
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BlockTask(TaskType task)
         {
-            if (_tasks[(int)task] != null)
-            {                
-                // Log.Write(LogComponent.TaskSwitch, "Removed wakeup for Task {0}", task);                
-                _tasks[(int)task].BlockTask();
-            }
+            // Log.Write(LogComponent.TaskSwitch, "Removed wakeup for Task {0}", task);
+            _tasks[(int)task].BlockTask();
         }
 
         public bool IsBlocked(TaskType task)
         {
-            if (_tasks[(int)task] != null)
-            {
-                return _tasks[(int)task].Wakeup;
-            }
-            else
-            {
-                return false;
-            }
+            return _tasks[(int)task].Wakeup;
         }
 
         /// <summary>
@@ -286,28 +274,15 @@ namespace Contralto.CPU
             get { return _nextTask; }
         }
 
-        public bool InternalBreak
-        {
-            get
-            {
-                return _internalBreak;
-            }
-
-            set
-            {
-                _internalBreak = value;
-            }
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 
         private void TaskSwitch()
-        {            
+        {
             // Select the highest-priority eligible task
             for (int i = _tasks.Length - 1; i >= 0; i--)
             {
-                if (_tasks[i] != null && _tasks[i].Wakeup)
-                {                    
+                if (_tasks[i].Wakeup)
+                {
                     _nextTask = _tasks[i];
                     break;
                 }
@@ -335,13 +310,11 @@ namespace Contralto.CPU
         ushort _rmr;
 
         // Task data
-        private Task _nextTask;         // The task to switch two after the next microinstruction
+        private Task _nextTask;         // The task to switch to after the next microinstruction
         private Task _currentTask;      // The currently executing task
         private Task[] _tasks = new Task[16];
 
         // The system this CPU belongs to
         private AltoSystem _system;
-
-        private bool _internalBreak;
     }
 }

@@ -34,7 +34,7 @@ namespace Contralto.CPU
         {
             public EthernetTask(AltoCPU cpu) : base(cpu)
             {
-                _taskType = TaskType.Ethernet;                
+                _taskType = TaskType.Ethernet;
                 _wakeup = false;
 
                 _ethernetController = _cpu._system.EthernetController;
@@ -42,17 +42,17 @@ namespace Contralto.CPU
 
             protected override InstructionCompletion ExecuteInstruction(MicroInstruction instruction)
             {                
-                // The Ethernet task only remains awake if there are pending data wakeups                
+                // The Ethernet task only remains awake if there are pending data wakeups
                 if (_ethernetController.CountdownWakeup)
                 {
                     //
-                    // The resulting [Countdown] wakeup is cleared when the Ether task next runs.                        
+                    // The resulting [Countdown] wakeup is cleared when the Ether task next runs.
                     _ethernetController.CountdownWakeup = false;
                     _wakeup = false;
-                }                           
+                }
 
                 return base.ExecuteInstruction(instruction);
-            }            
+            }
 
             protected override ushort GetBusSource(MicroInstruction instruction)
             {

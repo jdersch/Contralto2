@@ -603,14 +603,20 @@ namespace Contralto.IO
                             {
                                 // Read in one scanline's worth of data
                                 int scanlineWordCount = 256 - _system.OrbitController.FA;
+
+                                // TODO: try pulling garbage word out from ROS first
+                                //ushort lastWord = _system.OrbitController.GetOutputDataROS();
+
                                 for (int x = 0; x < scanlineWordCount; x++)
                                 {
                                     ushort word = _system.OrbitController.GetOutputDataROS();
                                     
-                                    int pageDataIndex = _readBands * scanlineWordCount * 2 + x * 2;
+                                    int pageDataIndex = _readBands * scanlineWordCount * 2 + x * 2;                                  
                                     _pageData[pageDataIndex] = (byte)(~word >> 8);
                                     _pageData[pageDataIndex + 1] = (byte)(~word & 0xff);
                                 }
+
+                                //_system.OrbitController.GetOutputDataROS();
 
                                 Log.Write(LogComponent.DoverROS, "Read band {0}", _readBands);
                             }

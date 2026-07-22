@@ -20,7 +20,6 @@
     <None Remove="Disks\music.dsk" />
     <None Remove="Disks\nonprog.dsk" />
     <None Remove="Disks\spruce-server-t300.zip" />
-    <None Remove="Disks\spruce-server.dsk" />
     <None Remove="Disks\spruce-server.dsk300" />
     <None Remove="Disks\xmsmall.dsk" />
     <None Remove="readme.txt" />
@@ -47,9 +46,6 @@
     <Content Include="Disks\spruce-server-t300.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Disks\spruce-server.dsk">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Disks\xmsmall.dsk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -59,8 +55,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="11.1.0-rc2" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.0-rc2" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.1.3" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.3" />
   </ItemGroup>
 
   <ItemGroup>

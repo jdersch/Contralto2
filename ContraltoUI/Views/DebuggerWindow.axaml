@@ -24,11 +24,114 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:ContraltoUI.ViewModels"
+        xmlns:conv="clr-namespace:ContraltoUI.Converters"
+        xmlns:views="clr-namespace:ContraltoUI.Views"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ContraltoUI.Views.DebuggerWindow"
         Icon="/Assets/Alto.ico"
         ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
-        Title="DebuggerWindow">
-  Welcome to Avalonia!
+        x:DataType="vm:DebuggerViewModel"
+        Title="Alto Debugger">
+    <Window.Resources>
+        <conv:RowConverter x:Key="RowConverter"/>
+        <conv:OctalConverter x:Key="OctalConverter"/>
+        <conv:TaskNameConverter x:Key="TaskNameConverter"/>
+    </Window.Resources>
+    <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Vertical">
+            <!-- Source display, controls -->
+            <Border BorderThickness="1" BorderBrush="Black">
+                <StackPanel Orientation="Vertical" Width="800">
+                    <Label>Microcode Source</Label>
+                    <TabControl Height="800">
+                        <TabItem Header="ROM0">
+                            <DataGrid Margin="0"
+                                    SelectedItem="{Binding CurrentSourceLine}"
+                                    ItemsSource="{Binding MicrocodeSource}"
+                                    IsReadOnly="False"
+                                    GridLinesVisibility="Vertical"
+                                    BorderThickness="1"
+                                    BorderBrush="Black"
+                                    SelectionMode="Single"
+                                    FontFamily="Inconsolata,Consolas,Monospace,Courier"
+                                    SelectionChanged="OnMicrocodeSelectionChanged">
+                                <DataGrid.Columns>
+                                    <DataGridCheckBoxColumn Header="Break"  Binding="{Binding Breakpoint}"/>
+                                    <DataGridTextColumn Header="Task" Binding="{Binding Task, Converter={StaticResource TaskNameConverter}}"/>
+                                    <DataGridTextColumn Header="Address" Binding="{Binding Address, Converter={StaticResource OctalConverter}, ConverterParameter=4}"/>
+                                    <DataGridTextColumn Header="Source" Binding="{Binding Text}"/>
+                                </DataGrid.Columns>
+                                <DataGrid.Styles>
+                                    <Style Selector="DataGridCell" x:DataType="vm:SourceLine">
+                                        <Setter Property="Background" Value="{Binding Task, Converter={StaticResource RowConverter}}"/>
+                                    </Style>
+                                </DataGrid.Styles>
+                            </DataGrid>
+                        </TabItem>
+                    </TabControl>
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Jump to address:</Label>
+                        <TextBox Width="50" Text="{Binding DestinationAddress}"/>
+                        <Button Margin="5" IsDefault="True" Command="{Binding JumpToAddress}" Content="Go"></Button>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <StackPanel Orientation="Horizontal">
+                <Button Margin="5" Command="{Binding SingleStep}" Content="Step"/>
+                <Button Margin="5" Command="{Binding AutoStep}" Content="Auto"/>
+                <Button Margin="5" Command="{Binding Execute}" Content="Run"/>
+                <Button Margin="5" Command="{Binding ExecuteToNextTask}" Content="Run Task"/>
+                <Button Margin="5" Command="{Binding NovaStep}" Content="Nova Step"/>
+                <Button Margin="5" Command="{Binding StopExecution}" Content="Stopn"/>
+                <Button Margin="5" Command="{Binding ResetSystem}" Content="Reset"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Vertical">
+            <!-- Memory/Task/CPU Registers -->
+            <Border BorderThickness="1" BorderBrush="Black">
+                <StackPanel Orientation="Vertical" Width="400">
+                    <Label>System Memory</Label>
+                        <DataGrid Height="400"
+                                Margin="0"
+                                SelectedItem="{Binding CurrentSourceLine}"
+                                ItemsSource="{Binding MicrocodeSource}"
+                                IsReadOnly="False"
+                                GridLinesVisibility="Vertical"
+                                BorderThickness="1"
+                                BorderBrush="Black"
+                                SelectionMode="Single"
+                                FontFamily="Inconsolata,Consolas,Monospace,Courier"
+                                  >
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Header="Break"  Binding="{Binding Breakpoint}"/>
+                                <DataGridTextColumn Header="Task" Binding="{Binding Task, Converter={StaticResource TaskNameConverter}}"/>
+                                <DataGridTextColumn Header="Address" Binding="{Binding Address, Converter={StaticResource OctalConverter}, ConverterParameter=4}"/>
+                                <DataGridTextColumn Header="Source" Binding="{Binding Text}"/>
+                            </DataGrid.Columns>
+                            <DataGrid.Styles>
+                                <Style Selector="DataGridCell" x:DataType="vm:SourceLine">
+                                    <Setter Property="Background" Value="{Binding Task, Converter={StaticResource RowConverter}}"/>
+                                </Style>
+                            </DataGrid.Styles>
+                        </DataGrid>
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Jump to address:</Label>
+                        <TextBox Width="50" Text="{Binding DestinationAddress}"/>
+                        <Button IsDefault="True" Command="{Binding JumpToAddress}">Go</Button>
+
+                        <Label>Find:</Label>
+                        <TextBox Width="50" Text="{Binding DestinationAddress}"/>
+                        <Button IsDefault="True" Command="{Binding JumpToAddress}" Content="Go"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <StackPanel Orientation="Vertical">
+            <!-- General Registers -->
+
+        </StackPanel>
+    </StackPanel>
 </Window>

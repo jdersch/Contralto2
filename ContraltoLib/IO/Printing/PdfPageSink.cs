@@ -50,9 +50,23 @@ namespace Contralto.IO.Printing
 
             try
             {
-                string path = System.IO.Path.Combine(
-                    _configuration.PrintOutputPath,
-                    String.Format("AltoDocument-{0}.pdf", DateTime.Now.ToString("yyyyMMdd-hhmmss")));
+                string path;
+
+                if (String.IsNullOrWhiteSpace(_configuration.PrintOutputFilename))
+                {
+                    path = System.IO.Path.Combine(
+                        _configuration.PrintOutputPath,
+                        String.Format("AltoDocument-{0}.pdf", DateTime.Now.ToString("yyyyMMdd-hhmmss")));
+                }
+                else
+                {
+                    path = System.IO.Path.Combine(
+                        _configuration.PrintOutputPath,
+                        _configuration.PrintOutputFilename);
+                }
+
+                // Ensure the output path exists
+                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
 
                 // Start a new document.
                 

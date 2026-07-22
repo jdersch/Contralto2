@@ -132,7 +132,7 @@ namespace Contralto
         /// <returns></returns>
         public Event Schedule(Event e)
         {
-#if DEBUG
+#if false
             if (_schedule.Contains(e))
             {
                 throw new InvalidOperationException("Can't do that, time will bend.");

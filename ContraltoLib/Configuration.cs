@@ -133,6 +133,7 @@ namespace Contralto
 
             AudioDACCapturePath = String.Empty;
             PrintOutputPath = String.Empty;
+            PrintOutputFilename = String.Empty;
             TridentImages = new StringCollection();
             
         }
@@ -159,6 +160,7 @@ namespace Contralto
             PageRasterOffsetY = config.PageRasterOffsetY;
             PauseWhenNotActive = config.PauseWhenNotActive;
             PrintOutputPath = config.PrintOutputPath;
+            PrintOutputFilename = config.PrintOutputFilename;
             ReversePageOrder = config.ReversePageOrder;
             SlowPhosphorSimulation = config.SlowPhosphorSimulation;
             SystemType = config.SystemType;
@@ -326,6 +328,11 @@ namespace Contralto
         /// Path for print output.
         /// </summary>
         public string PrintOutputPath;
+
+        /// <summary>
+        /// Specific filename to use for print output.  This is intended to be used in scripting only.
+        /// </summary>
+        public string PrintOutputFilename;
 
         /// <summary>
         /// Whether to reverse the page order when printing.

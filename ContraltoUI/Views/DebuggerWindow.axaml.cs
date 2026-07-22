@@ -21,14 +21,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using Avalonia.Controls;
+using ContraltoUI.ViewModels;
 
 namespace ContraltoUI.Views
-{
+{ 
+
     public partial class DebuggerWindow : Window
     {
         public DebuggerWindow()
         {
             InitializeComponent();
+        }
+
+        public void OnMicrocodeSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // This is a hack to force the selected line into view, since DataGrid won't do it on databinding alone, for some reason.
+            DebuggerViewModel? debugger = DataContext as DebuggerViewModel;
+
+            if (debugger == null)
+            {
+                return;
+            }
+
+            ((DataGrid)sender).ScrollIntoView(debugger.CurrentSourceLine, null);
         }
     }
 }

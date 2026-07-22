@@ -415,7 +415,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
         System.Diagnostics.Debugger.Break();
 
         // TODO: display some kind of diagnostic?
-        OnExit();
+        //OnExit();
     }
 
     /// <summary>
@@ -542,7 +542,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             return;
         }
 
-        _system.UnloadDiabloDrive(driveNumber);
+        _system.UnloadDiabloDrive(driveNumber, true);
         if (driveNumber == 0)
         {
             _system.Configuration.Drive0Image = null;
@@ -667,7 +667,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             return;
         }
 
-        _system.UnloadDiabloDrive(driveNumber);
+        _system.UnloadTridentDrive(driveNumber);
         _system.Configuration.TridentImages[driveNumber] = null;
         OnPropertyChanged(nameof(DiabloDriveNames));
     }
@@ -772,7 +772,7 @@ public partial class AltoUIViewModel : ViewModelBase, IAltoDisplay
             return;
         }
 
-        ConfigurationViewModel vm = new ConfigurationViewModel(_system);
+        DebuggerViewModel vm = new DebuggerViewModel(_system);
         DebuggerWindow debuggerWindow = new DebuggerWindow()
         {
             DataContext = vm

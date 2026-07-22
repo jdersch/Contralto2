@@ -123,7 +123,7 @@ namespace Contralto.Scripting
         }
 
         [DebuggerFunction("unload disk", "Unloads the specified drive.", "<drive>")]
-        private CommandResult UnloadDisk(ushort drive)
+        private CommandResult UnloadDisk(ushort drive, bool commitChanges)
         {
             if (drive > 1)
             {
@@ -131,7 +131,7 @@ namespace Contralto.Scripting
             }
 
             // Unload the current pack.
-            _system.UnloadDiabloDrive(drive);
+            _system.UnloadDiabloDrive(drive, commitChanges);
             Console.WriteLine("Drive {0} unloaded.", drive);
 
             return CommandResult.Normal;
@@ -223,6 +223,13 @@ namespace Contralto.Scripting
         private CommandResult SetKeyboardBootAddress(ushort address)
         {
             _system.Configuration.BootFile = address;
+            return CommandResult.Normal;
+        }
+
+        [DebuggerFunction("set print output filename", "Sets the filename used when printing.")]
+        private CommandResult SetPrintOutputFilename(string name)
+        {
+            _system.Configuration.PrintOutputFilename = name;
             return CommandResult.Normal;
         }
 
